@@ -1,0 +1,36 @@
+spring:
+  application:
+     name: WhatsAppClone
+     file:
+       uploads:
+         media-output.path: ./uploads
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/whatsapp_clone
+    username: postgres
+    password: admin
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+          jwt:
+            issuer-uri: "http://localhost:8180/realms/fitness-oath2"
+            jwk-set-uri: http://localhost:8180/realms/fitness-oath2/protocol/openid-connect/certs
+
+  servlet:
+    multipart:
+      enabled: true          # Enable or disable multipart support
+      max-file-size: 50MB
