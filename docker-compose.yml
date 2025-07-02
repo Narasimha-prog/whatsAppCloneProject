@@ -20,10 +20,10 @@ services:
     container_name: keyCloak-wac
     image: quay.io/keycloak/keycloak:26.0.0
     ports:
-      - 9090:7878
+      - 9090:8080
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
 
     networks:
       - whatsapp-clone
