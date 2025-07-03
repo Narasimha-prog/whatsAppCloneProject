@@ -3,10 +3,7 @@ package com.lnreddy.WhatsAppClone.user;
 
 import com.lnreddy.WhatsAppClone.chat.Chat;
 import com.lnreddy.WhatsAppClone.common.BaseAuditEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.NamedQuery;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -27,6 +24,7 @@ import java.util.List;
 public class User extends BaseAuditEntity {
 
     private static final int LAST_ACTIVE_INTERVAL = 5;
+    @Id
     private String id;
     private String firstName;
     private String lastName;

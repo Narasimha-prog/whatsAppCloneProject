@@ -23,7 +23,7 @@ import java.util.List;
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID,
         query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id =: senderId OR c.recipient =: senderId ORDER BY createDate DESC")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID,
-        query = "SELECT"
+        query = "SELECT DISTINCT c FROM Chat c WHERE (c.sender.id =:senderId  AND c.recipient.id=: recipientId) OR (c.sender.id =:recipientId  AND c.recipient.id=: senderId)"
           )
 public class Chat extends BaseAuditEntity {
     @Id
@@ -38,6 +38,14 @@ public class Chat extends BaseAuditEntity {
     @OneToMany(mappedBy = "chat",fetch = FetchType.EAGER)
     @OrderBy("createdDate DESC")
     private List<com.lnreddy.WhatsAppClone.message.Message> messages;
+
+    @Transient
+    public String getChatName(String senderId) {
+        if (recipient.getId().equals(senderId)) {
+            return sender.getFirstName() + " " + sender.getLastName();
+        }
+        return recipient.getFirstName() + " " + recipient.getLastName();
+    }
 
     @Transient
     public String getChatId(final String senderId){
