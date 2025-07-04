@@ -1,6 +1,8 @@
 package com.lnreddy.WhatsAppClone.chat;
 
+import com.lnreddy.WhatsAppClone.user.User;
 import com.lnreddy.WhatsAppClone.user.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -34,7 +36,18 @@ public class ChatService {
         if(existedChat.isPresent()){
             return existedChat.get().getId();
         }
-        return null;
+        User sender=userRepository.findByPublicId(senderId)
+                .orElseThrow(()->new EntityNotFoundException("User with Id "+senderId+"Not Found"));
+        User recipient=userRepository.findByPublicId(receiverId)
+                .orElseThrow(()->new EntityNotFoundException("User with Id "+receiverId+"Not Found"));
+
+        Chat newChat=new Chat();
+        newChat.setSender(sender);
+        newChat.setRecipient(recipient);
+
+        Chat savedChat=chatRepository.save(newChat);
+
+        return savedChat.getId();
     }
 
 
