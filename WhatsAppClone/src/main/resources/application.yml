@@ -3,7 +3,7 @@ spring:
      name: WhatsAppClone
      file:
        uploads:
-         media-output.path: ./uploads
+         media-output-path: ./uploads
 
   datasource:
     url: jdbc:postgresql://localhost:5432/whatsapp_clone
