@@ -6,7 +6,7 @@ spring:
          media-output-path: ./uploads
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/whatsapp_clone
+    url: jdbc:postgresql://localhost:5432/whatsapp
     username: postgres
     password: admin
 
@@ -27,10 +27,17 @@ spring:
     oauth2:
       resourceserver:
           jwt:
-            issuer-uri: "http://localhost:9090/realms/whats-app-clone"
+            issuer-uri: "http://localhost:8180/realms/fitness-oath2"
 #            jwk-set-uri: http://localhost:8180/realms/fitness-oath2/protocol/openid-connect/certs
 
   servlet:
     multipart:
       enabled: true          # Enable or disable multipart support
       max-file-size: 50MB
+springdoc:
+  default-produces-media-type: application/json
+
+
+server:
+  port: 7878
+

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 public class MessageMapper {
 
 
-    public MessageResponse toMessageREponse(Message message) {
+    public MessageResponse toMessageReponse(Message message) {
         return MessageResponse.builder()
                 .id(message.getId())
                 .content(message.getContent())

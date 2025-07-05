@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<Message,Long> {
     @Query(name = MessageConstants.FIND_MESSAGES_BY_CHAT_ID)
-    List<MessageResponse> findMessagesByChatId(@Param("chatId") String chatId);
+    List<Message> findMessagesByChatId(@Param("chatId") String chatId);
 
     @Query(name = MessageConstants.SET_MESSAGES_TO_SEEN_BY_CHAT)
     @Modifying
