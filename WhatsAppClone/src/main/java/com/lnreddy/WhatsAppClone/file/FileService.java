@@ -8,6 +8,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 @Service
 @Slf4j
@@ -41,6 +45,15 @@ public class FileService {
         }
         final String fileExtension=getFileExtention(sourceFile.getOriginalFilename());
 
+        String targetFilePath=finalUploadPath+File.separator+System.currentTimeMillis()+fileExtension;
+        Path targetPath= Paths.get(targetFilePath);
+        try {
+            Files.write(targetPath,sourceFile.getBytes());
+            log.info("File saved at TargetPath {} ",targetPath);
+            return targetFilePath;
+        } catch (IOException e) {
+            log.error("File was not saved... ",e);
+        }
         return finalUploadPath;
     }
 
