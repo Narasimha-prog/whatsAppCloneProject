@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "bootstrap/dist/css/bootstrap.min.css";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
+@import '@ctrl/ngx-emoji-mart/picker';
 
 *{
 
@@ -20,4 +21,15 @@ body{
 
 .cursor-ponter{
     cursor: pointer;
+}
+
+.user-img{
+    width: 40px;
+    height: 40px;
+    border: 50%;
+    overflow: hidden;
+
+    >img{
+        width: 100%;
+    }
 }
