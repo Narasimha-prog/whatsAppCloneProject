@@ -4,6 +4,7 @@ import com.lnreddy.WhatsAppClone.user.User;
 import com.lnreddy.WhatsAppClone.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +14,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatService {
 
     private final ChatRepository chatRepository;
@@ -22,7 +24,7 @@ public class ChatService {
     @Transactional(readOnly = true)
     public List<ChatResponse> getChatByReceiverId(Authentication currentuser){
         final String userId= currentuser.getName();
-
+        log.info("Current users who log in {}",currentuser.getName());
         return chatRepository.findChatsBySenderId(userId)
                 .stream()
                 .map(chat->chatMapper.toChatResponse(chat,userId))

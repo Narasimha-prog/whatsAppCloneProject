@@ -22,7 +22,7 @@ public class UserSyncronizer {
 
                 userMail->{
                     log.info("Synchronize User having email {}",userMail);
-                   // Optional<User> optionalUser=userRepository.findByEmail(userMail);
+
 
                     User user=userMapper.fromTokenAttributes(token.getClaims());
                     userRepository.save(user);

@@ -19,12 +19,20 @@ export class KeycloakService {
 
   return this._keycloak;
 }
+  async init() {
+    const authenticated = await this.keycloak.init({
+      onLoad: 'login-required'
+    });
 
-async init(){
-  const authenticated=await this.keycloak.init({
+    if (authenticated) {
+      this.startTokenRefreshTimer(); // 🔄 Start the refresh loop
+    }
+  }
 
-    onLoad: 'login-required'
-  });
+private startTokenRefreshTimer() {
+  setInterval(() => {
+    this.updateTokenIfNeeded(30);
+  }, 60000); // Every minute
 }
 
 async login(){
@@ -54,6 +62,16 @@ logOut(){
 accountManagement(){
   return this.keycloak.accountManagement();
 }
+
+async updateTokenIfNeeded(minValidity = 30): Promise<boolean> {
+    try {
+      return await this.keycloak.updateToken(minValidity);
+    } catch (err) {
+      console.error('Token refresh failed', err);
+      this.keycloak.logout(); // or route to login
+      return false;
+    }
+  }
 
 }
 

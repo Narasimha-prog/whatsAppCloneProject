@@ -15,7 +15,8 @@ public class FileUtils {
 
 
     public static byte[] readFileFromLocation(String filePath){
-        if(filePath.isBlank()){
+        if (filePath == null || filePath.isBlank()) {
+            log.warn("Empty or null file path provided");
             return new byte[0];
         }
         try {

@@ -12,11 +12,14 @@ public class UserMapper {
         User user=new User();
 
         if(attributes.containsKey("sub")){
-            user.setFirstName(attributes.get("sub").toString());
-        }else if(attributes.containsKey("nickname")){
-            user.setFirstName(attributes.get("nickname").toString());
+            user.setId(attributes.get("sub").toString());
         }
 
+        if (attributes.containsKey("given_name")) {
+            user.setFirstName(attributes.get("given_name").toString());
+        } else if (attributes.containsKey("nickname")) {
+            user.setFirstName(attributes.get("nickname").toString());
+        }
         if(attributes.containsKey("family_name")){
             user.setLastName(attributes.get("family_name").toString());
         }

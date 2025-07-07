@@ -40,7 +40,7 @@
                                     }
                                     @else {
                                     <small class="offline-status"></small>
-                                    <small>Online</small>
+                                    <small>Offline</small>
                                     }
 
                                 </div>
@@ -57,7 +57,7 @@
                         @for (message of chatMessages; track message) {
 
                         @if(isSelfMessage(message)) {
-                        <div class="message-box sellf">
+                        <div class="message-box self">
                             <div class="d-flex flex-column">
 
                                 @if (message.type === 'TEXT') {
@@ -90,7 +90,7 @@
                         </div>
 
                         }@else {
-                        <div class="message-box friend">
+                        <div class="message-box self friend">
                             <div class="d-flex flex-column align-items-end">
                                 @if (message.type === 'TEXT') {
                                 <span>{{message.content}}</span>

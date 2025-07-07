@@ -16,6 +16,9 @@ import { EmojiData } from '@ctrl/ngx-emoji-mart/ngx-emoji';
   styleUrl: './main.scss'
 })
 export class Main implements OnInit {
+wrapMessage(arg0: string|undefined) {
+throw new Error('Method not implemented.');
+}
 sendMessage() {
   if(this.messageContent){
     const messageRequest:MessageRequest={
@@ -24,6 +27,7 @@ sendMessage() {
       receiverId: this.getReceiverId(),
       content: this.messageContent,
       type: "TEXT"
+    
     };
 
 
@@ -52,20 +56,19 @@ sendMessage() {
 
 
 }
- private getSenderId() : string{
-    if(this.selectedChat.id === this.keycloakService.userId){
-      return this.selectedChat.id as string;
+  private getSenderId(): string {
+    if (this.selectedChat.senderId === this.keycloakService.userId) {
+      return this.selectedChat.senderId as string;
     }
     return this.selectedChat.recipientId as string;
   }
 
-private getReceiverId(): string{
-  if(this.selectedChat.id === this.keycloakService.userId){
+  private getReceiverId(): string {
+    if (this.selectedChat.senderId === this.keycloakService.userId) {
       return this.selectedChat.recipientId as string;
     }
-    return this.selectedChat.id as string;
-}
-
+    return this.selectedChat.senderId as string;
+  }
 onClick() {
   this.setMessagesToSeen();
 
@@ -114,7 +117,7 @@ messageContent ='';
     this.selectedChat = chatResponse;
     this.getAllChatMessages(chatResponse.id as string);
     this.setMessagesToSeen();
-    this.selectedChat.unreadCount=0;
+  this.selectedChat.unreadCount=0;
   }
 
   setMessagesToSeen() {
@@ -134,6 +137,7 @@ messageContent ='';
         this.chatMessages = messages
       }
     })
+
 
   }
 
@@ -159,5 +163,6 @@ messageContent ='';
   logout() {
     this.keycloakService.logOut();
   }
+  
 
 }

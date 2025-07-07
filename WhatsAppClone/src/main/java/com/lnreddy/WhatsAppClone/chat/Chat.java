@@ -19,7 +19,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "chat")
+@Table(name = "chats")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID,
         query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id = :senderId OR c.recipient.id = :senderId ORDER BY createdDate DESC")
 @NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID,
@@ -35,7 +35,7 @@ public class Chat extends BaseAuditEntity {
     @ManyToOne
     @JoinColumn(name = "recipient_id")
     private User recipient;
-    @OneToMany(mappedBy = "chat",fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "chat",fetch = FetchType.LAZY)
     @OrderBy("createdDate DESC")
     private List<com.lnreddy.WhatsAppClone.message.Message> messages;
 
@@ -48,18 +48,14 @@ public class Chat extends BaseAuditEntity {
     }
 
     @Transient
-    public String getChatId(final String senderId){
-        if(recipient.getId().equals(senderId)){
-            return sender.getFirstName()+" "+sender.getLastName();
-        }
-        return recipient.getFirstName()+" "+recipient.getLastName();
-
+    public String getChatId() {
+        return sender.getId();
     }
 
     @Transient
     public Long getUnReadMessages(final String senderId){
         return messages.stream()
-                .filter(m->m.getReceiverId().equals(senderId))
+                .filter(m->m.getReceiverId().getId().equals(senderId))
                 .filter(m-> MessageState.SENT==m.getState())
                 .count();
     }

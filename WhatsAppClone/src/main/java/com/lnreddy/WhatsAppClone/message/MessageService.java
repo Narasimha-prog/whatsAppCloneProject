@@ -7,6 +7,8 @@ import com.lnreddy.WhatsAppClone.file.FileUtils;
 import com.lnreddy.WhatsAppClone.notification.Notification;
 import com.lnreddy.WhatsAppClone.notification.NotificationService;
 import com.lnreddy.WhatsAppClone.notification.NotificationType;
+import com.lnreddy.WhatsAppClone.user.User;
+import com.lnreddy.WhatsAppClone.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -25,17 +27,23 @@ public class MessageService {
     private final MessageMapper mapper;
     private final FileService fileService;
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     public void saveMessage(MessageRequest messageRequest){
 
         Chat chat=chatRepository.findById(messageRequest.getChatId())
                 .orElseThrow(()->new EntityNotFoundException("Chat was not Found"));
+        User sender = userRepository.findById(messageRequest.getSenderId())
+                .orElseThrow(() -> new EntityNotFoundException("Sender user not found"));
+
+        User receiver = userRepository.findById(messageRequest.getReceiverId())
+                .orElseThrow(() -> new EntityNotFoundException("Receiver user not found"));
 
         Message message=new Message();
         message.setContent(messageRequest.getContent());
         message.setChat(chat);
-        message.setSenderId(messageRequest.getSenderId());
-        message.setReceiverId(messageRequest.getReceiverId());
+        message.setSenderId(sender);
+        message.setReceiverId(receiver);
         message.setType(messageRequest.getType());
         message.setState(MessageState.SENT);
 
@@ -52,7 +60,7 @@ public class MessageService {
                 .notificationType(NotificationType.MESSAGE)
                 .chatName(chat.getChatName(messageRequest.getSenderId()))
                                  .build();
-        notificationService.sendNotification(message.getReceiverId(),notification);
+        notificationService.sendNotification(message.getReceiverId().getId(),notification);
     }
     public List<MessageResponse> findChatMessages(String chatId){
 
@@ -90,10 +98,16 @@ public class MessageService {
         final String filePath=fileService.saveFile(multipartFile,senderId);
 
 
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new EntityNotFoundException("Sender user not found"));
+
+        User receiver = userRepository.findById(recipientId)
+                .orElseThrow(() -> new EntityNotFoundException("Receiver user not found"));
+
         Message message=new Message();
         message.setChat(chat);
-        message.setSenderId(senderId);
-        message.setReceiverId(recipientId);
+        message.setSenderId(sender);
+        message.setReceiverId(receiver);
         message.setType(MessageType.IMAGE);
         message.setState(MessageState.SENT);
         message.setMediaFilePath(filePath);

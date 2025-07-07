@@ -1,4 +1,4 @@
-import { Component, input, InputSignal, output } from '@angular/core';
+import { Component, input, InputSignal, output, ViewEncapsulation } from '@angular/core';
 import { ChatResponse, UserResponse } from '../../services/models';
 import {DatePipe} from '@angular/common';
 import { ChatsService, UserService } from '../../services/services';
@@ -8,7 +8,8 @@ import { KeycloakService } from '../../utils/keycloak/keycloak';
   selector: 'app-chat-list',
   imports: [ DatePipe],
   templateUrl: './chat-list.html',
-  styleUrl: './chat-list.scss'
+  styleUrl: './chat-list.scss',
+    encapsulation: ViewEncapsulation.None
 })
 export class ChatList {
 
