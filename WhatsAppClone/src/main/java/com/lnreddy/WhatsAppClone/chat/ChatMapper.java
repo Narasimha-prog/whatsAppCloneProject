@@ -1,9 +1,13 @@
 package com.lnreddy.WhatsAppClone.chat;
 
+import com.lnreddy.WhatsAppClone.tractUsers.WebSocketPresenceTracker;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+
 public class ChatMapper {
+
 
     public ChatResponse toChatResponse(Chat chat,String senderId){
         return ChatResponse.builder()

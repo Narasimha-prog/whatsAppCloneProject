@@ -34,10 +34,10 @@ public class FileService {
         @NonNull    String fileUploadSubPath) {
         final String finalUploadPath=fileUploadPath+File.separator+fileUploadSubPath;
 
-        File targetFolder=new File(fileUploadSubPath);
+        File targetFolder=new File(finalUploadPath);
 
         if(!targetFolder.exists()){
-          boolean folderCreated= targetFolder.mkdir();
+          boolean folderCreated= targetFolder.mkdirs();
           if(!folderCreated){
               log.warn("Failed to Create Target folder ,{}",targetFolder);
               return  null;
@@ -45,7 +45,8 @@ public class FileService {
         }
         final String fileExtension=getFileExtention(sourceFile.getOriginalFilename());
 
-        String targetFilePath=finalUploadPath+File.separator+System.currentTimeMillis()+fileExtension;
+        String targetFilePath=finalUploadPath+File.separator+System.currentTimeMillis()+"."+fileExtension;
+        log.info(targetFilePath);
         Path targetPath= Paths.get(targetFilePath);
         try {
             Files.write(targetPath,sourceFile.getBytes());

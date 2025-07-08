@@ -26,6 +26,16 @@ export class ChatList {
     
   }
  selectContact(contact: UserResponse) {
+  const existingChat = this.chats().find(
+    chat => chat.recipientId === contact.id || chat.senderId === contact.id
+  );
+
+  if (existingChat) {
+    // Chat already exists, just select it
+    this.chatSelected.emit(existingChat);
+    this.searchNewContact = false;
+    return;
+  }
     this.chatService.createChat({
       'sender-id': this.keycloakService.userId as string,
       'recipient-id': contact.id as string
@@ -66,6 +76,19 @@ searchContact() {
    })
 }
 
- 
+trackByChatId(index: number, chat: ChatResponse): string {
+  if (chat.id) {
+    return chat.id;
+  }
+  return index.toString(); // fallback for undefined id
+}
+
+
+trackByContactId(index: number, contact: UserResponse): string {
+  if (contact.id) {
+    return contact.id;
+  }
+  return index.toString(); // fallback for undefined id
+}
 
 }
