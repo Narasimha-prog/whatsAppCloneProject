@@ -14,6 +14,7 @@ export const keycloakHttpInterceptor: HttpInterceptorFn = (req, next) => {
         Authorization: `Bearer ${token}`
       })
     });
+    console.log("Sending request with headers:", authReq.headers);
     return next(authReq);
   }
   return next(req);
