@@ -112,6 +112,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<finalName>whatsapp-clone</finalName>
 	</build>
 
 </project>

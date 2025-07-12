@@ -8,7 +8,7 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { FormsModule } from '@angular/forms';
 import { EmojiData } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import SockJS from 'sockjs-client';
-import * as stomp from 'stompjs';
+import * as stomp from '@stomp/stompjs';
 import { Notification } from './notification';
 
 
@@ -232,13 +232,26 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   }
   initWebSocket() {
     if (this.keycloakService.keycloak.tokenParsed?.sub) {
-      let ws = new SockJS('http://localhost:7878/ws');
+      // let ws = new SockJS('http://localhost:7878/ws');
+        const sub = this.keycloakService.keycloak.tokenParsed?.sub;
+        const token = this.keycloakService.keycloak.token;
+    
+        const subURL = `/users/${sub}/chat`;
 
-      this.socketClient = stomp.over(ws);
-      const subURL = `/users/${this.keycloakService.keycloak.tokenParsed?.sub}/chat`;
-      this.socketClient.connect({
-        'Authorization': 'Bearer ' + this.keycloakService.keycloak.token
-      },
+    this.socketClient = new stomp.Client({
+    // SockJS fallback
+    webSocketFactory: () => new SockJS('http://localhost:7878/ws'),
+
+    connectHeaders: {
+      Authorization: `Bearer ${token}`,
+    },
+
+    debug: (str) => {
+      console.log('STOMP debug:', str);
+    },
+
+    reconnectDelay: 5000, // Auto reconnect in 5 seconds
+  }),
         () => {
           this.notificationSubscription = this.socketClient.subscribe(subURL,
             (message: any): any => {
@@ -254,7 +267,7 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
           )
         }
-      )
+      
 
     }
   }
