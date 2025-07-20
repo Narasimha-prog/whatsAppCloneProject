@@ -6,7 +6,7 @@ spring:
          media-output-path: ./uploads
 
   datasource:
-    url: jdbc:postgresql://postgres:5432/whatsapp_clone
+    url: jdbc:postgresql://localhost:5432/whatsapp
     username: postgres
     password: admin
 
@@ -27,7 +27,7 @@ spring:
     oauth2:
       resourceserver:
           jwt:
-            issuer-uri: "http://localhost:8180/realms/whats-app-clone"
+            issuer-uri: "http://localhost:8180/realms/fitness-oath2"
 
 
   servlet:

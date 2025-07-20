@@ -226,51 +226,44 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
   ngOnInit(): void {
     this.initWebSocket();
-
     this.getAllChats();
 
   }
   initWebSocket() {
-    if (this.keycloakService.keycloak.tokenParsed?.sub) {
-      // let ws = new SockJS('http://localhost:7878/ws');
-        const sub = this.keycloakService.keycloak.tokenParsed?.sub;
-        const token = this.keycloakService.keycloak.token;
-    
-        const subURL = `/users/${sub}/chat`;
+  const sub = this.keycloakService.keycloak.tokenParsed?.sub;
+  const token = this.keycloakService.keycloak.token;
+  const subURL = `/users/${sub}/chat`;
 
-    this.socketClient = new stomp.Client({
-    // SockJS fallback
+  this.socketClient = new stomp.Client({
     webSocketFactory: () => new SockJS('http://localhost:7878/ws'),
-
     connectHeaders: {
       Authorization: `Bearer ${token}`,
     },
-
     debug: (str) => {
       console.log('STOMP debug:', str);
     },
+    reconnectDelay: 5000,
 
-    reconnectDelay: 5000, // Auto reconnect in 5 seconds
-  }),
-        () => {
-          this.notificationSubscription = this.socketClient.subscribe(subURL,
-            (message: any): any => {
-
-              const notification: Notification = JSON.parse(message.body);
-
-              this.handleNotification(notification);
-            },
-
-            () => { console.error('error while connecting to websocket..') }
-
-
-
-          )
+    // ✅ CORRECTLY SET onConnect handler
+    onConnect: () => {
+      console.log('WebSocket connected, subscribing to', subURL);
+      this.notificationSubscription = this.socketClient.subscribe(
+        subURL,
+        (message: any) => {
+          const notification: Notification = JSON.parse(message.body);
+          this.handleNotification(notification);
         }
-      
+      );
+    },
 
+    onStompError: (frame) => {
+      console.error('STOMP error:', frame.headers['message']);
+      console.error('Details:', frame.body);
     }
-  }
+  });
+
+  this.socketClient.activate(); // ✅ Important: Starts the connection
+}
   handleNotification(notification: Notification) {
     if (!notification) return;
     this.ngZone.run(() => {

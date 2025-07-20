@@ -12,8 +12,8 @@ export class KeycloakService {
     if(!this._keycloak){
     this._keycloak=new Keycloak({
       url: "http://localhost:8180",
-      realm: "whats-app-clone",
-      clientId: "whatsapp_clone"
+      realm: "fitness-oath2",
+      clientId: "whats-app-clone"
     });
   }
 
