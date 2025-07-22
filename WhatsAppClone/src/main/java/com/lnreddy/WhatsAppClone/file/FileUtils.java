@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
+
 
 @Slf4j
 public class FileUtils {
@@ -23,7 +23,7 @@ public class FileUtils {
             Path file= new File(filePath).toPath();
             return Files.readAllBytes(file);
         } catch (IOException e) {
-            log.warn("File is Not found in Given Path {}",filePath);
+            log.warn("Failed to read file at path {}. Error: {}", filePath, e.getMessage());
         }
         return new byte[0];
     }
