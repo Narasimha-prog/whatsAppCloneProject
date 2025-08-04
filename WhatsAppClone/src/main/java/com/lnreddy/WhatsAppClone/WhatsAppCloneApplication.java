@@ -19,8 +19,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 		in = SecuritySchemeIn.HEADER,
 		flows = @OAuthFlows(
 				password = @OAuthFlow(
-						authorizationUrl = "http://localhost:8180/realms/fitness-oath2/protocol/openid-connect/auth",
-						tokenUrl = "http://localhost:8180/realms/fitness-oath2/protocol/openid-connect/token"
+						authorizationUrl = "http://localhost:8180/realms/WhatsClone/protocol/openid-connect/auth",
+						tokenUrl = "http://localhost:8180/realms/WhatsClone/protocol/openid-connect/token"
 
 				)
 		)

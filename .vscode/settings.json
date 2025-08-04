@@ -1,0 +1,24 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5400,
+            "driver": "PostgreSQL",
+            "password": "admin",
+            "username": "admin",
+            "database": "ecommerce",
+            "name": "ecommerce_db"
+        },
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5433,
+            "driver": "PostgreSQL",
+            "name": "5433",
+            "database": "whatsapp_clone",
+            "username": "postgres",
+            "password": "admin"
+        }
+    ]
+}
