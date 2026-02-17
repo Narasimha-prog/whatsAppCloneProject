@@ -1,10 +1,12 @@
-package com.lnreddy.WhatsAppClone.notification;
+package com.lnreddy.WhatsAppClone.notification.service;
 
+import com.lnreddy.WhatsAppClone.notification.model.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 
 
 @Service
@@ -15,11 +17,11 @@ public class NotificationService {
   final  private SimpMessagingTemplate  messagingTemplate;
 
 
-  public void sendNotification(String userId, Notification notification){
+  public void sendNotification(UUID userId, Notification notification){
       log.info("Sending ws notification to {} with PayLoad {}",userId,notification);
 
       messagingTemplate.convertAndSendToUser(
-              userId,
+              userId.toString(),
               "/chat",notification
       );
 

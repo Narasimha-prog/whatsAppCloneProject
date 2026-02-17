@@ -1,7 +1,12 @@
 package com.lnreddy.WhatsAppClone.auth.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
-@Builder
-public record ForgetPasswordRequest(String email) {
+
+public record ForgetPasswordRequest(
+        @Email(message = "Invalid email format")
+        @NotBlank(message = "Email is required")
+        String email) {
 }

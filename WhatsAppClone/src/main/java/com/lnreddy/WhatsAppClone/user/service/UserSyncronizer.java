@@ -2,7 +2,7 @@ package com.lnreddy.WhatsAppClone.user.service;
 
 import com.lnreddy.WhatsAppClone.user.entity.User;
 import com.lnreddy.WhatsAppClone.user.mapper.UserMapper;
-import com.lnreddy.WhatsAppClone.user.repository.UserRepository;
+import com.lnreddy.WhatsAppClone.user.repository.IUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -16,7 +16,7 @@ import java.util.Optional;
 @Slf4j
 public class UserSyncronizer {
 
-    private final UserRepository userRepository;
+    private final IUserRepository userRepository;
     private final UserMapper userMapper;
 
     public void syncronizeWithIdp(Jwt token) {

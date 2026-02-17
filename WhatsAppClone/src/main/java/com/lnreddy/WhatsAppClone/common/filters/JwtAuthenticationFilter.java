@@ -1,9 +1,10 @@
 package com.lnreddy.WhatsAppClone.common.filters;
 
 
+import com.lnreddy.WhatsAppClone.auth.service.JwtService;
+import com.lnreddy.WhatsAppClone.common.secuity.CustomeUserDetails;
 import com.lnreddy.WhatsAppClone.user.entity.User;
 import com.lnreddy.WhatsAppClone.user.service.UserService;
-import com.lnreddy.WhatsAppClone.auth.service.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,7 +25,7 @@ import java.io.IOException;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtUtil jwtUtil;
+    private final JwtService jwtUtil;
 
     private final UserService userService;
 
@@ -43,7 +44,7 @@ log.info("incoming request for jwtFilter: {}",request.getRequestURI());
                 String username = jwtUtil.getUsername(token);
 
                 // 1️⃣ Get domain user
-                User domainUser = userService.findByUserEmail(username);
+                User domainUser = userService.findByUserEmailId(username);
 
                 // 2️⃣ Wrap in UserDetails
                 CustomeUserDetails userDetails = new CustomeUserDetails(domainUser);

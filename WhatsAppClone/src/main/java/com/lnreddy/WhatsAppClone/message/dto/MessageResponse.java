@@ -1,13 +1,14 @@
 package com.lnreddy.WhatsAppClone.message.dto;
 
-import com.lnreddy.WhatsAppClone.message.MessageState;
-import com.lnreddy.WhatsAppClone.message.MessageType;
+import com.lnreddy.WhatsAppClone.message.constants.MessageState;
+import com.lnreddy.WhatsAppClone.message.constants.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -15,12 +16,12 @@ import java.time.LocalDateTime;
 @Builder
 public class MessageResponse {
 
-    private  Long id;
+    private UUID id;
     private String content;
     private MessageType type;
     private MessageState state;
-    private String senderId;
-    private String receiverId;
+    private UUID senderId;
+    private UUID receiverId;
     private LocalDateTime createdAt;
     private byte[] media;
 }

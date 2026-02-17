@@ -1,14 +1,18 @@
 package com.lnreddy.WhatsAppClone.message.service;
 
-import com.lnreddy.WhatsAppClone.chat.Chat;
-import com.lnreddy.WhatsAppClone.chat.ChatRepository;
+import com.lnreddy.WhatsAppClone.chat.entity.Chat;
+import com.lnreddy.WhatsAppClone.chat.repository.IChatRepository;
 import com.lnreddy.WhatsAppClone.common.file.FileService;
 import com.lnreddy.WhatsAppClone.common.file.FileUtils;
-import com.lnreddy.WhatsAppClone.message.*;
+import com.lnreddy.WhatsAppClone.message.constants.MessageState;
+import com.lnreddy.WhatsAppClone.message.constants.MessageType;
+import com.lnreddy.WhatsAppClone.message.dto.MessageRequest;
+import com.lnreddy.WhatsAppClone.message.dto.MessageResponse;
 import com.lnreddy.WhatsAppClone.message.entity.Message;
-import com.lnreddy.WhatsAppClone.notification.Notification;
-import com.lnreddy.WhatsAppClone.notification.NotificationService;
-import com.lnreddy.WhatsAppClone.notification.NotificationType;
+import com.lnreddy.WhatsAppClone.message.repository.IMessageRepository;
+import com.lnreddy.WhatsAppClone.notification.model.Notification;
+import com.lnreddy.WhatsAppClone.notification.service.NotificationService;
+import com.lnreddy.WhatsAppClone.notification.constants.NotificationType;
 import com.lnreddy.WhatsAppClone.user.entity.User;
 import com.lnreddy.WhatsAppClone.user.repository.IUserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -19,14 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class MessageService {
 
-    private final MessageRepository messageRepository;
-    private final ChatRepository chatRepository;
-    private final MessageMapper mapper;
+    private final IMessageRepository messageRepository;
+    private final IChatRepository chatRepository;
     private final FileService fileService;
     private final NotificationService notificationService;
     private final IUserRepository userRepository;
@@ -38,7 +42,7 @@ public class MessageService {
         User sender = userRepository.findById(messageRequest.getSenderId())
                 .orElseThrow(() -> new EntityNotFoundException("Sender user not found"));
 
-        User receiver = userRepository.findById(messageRequest.getReceiverId())
+        User receiver = userRepository.findById(  messageRequest.getReceiverId())
                 .orElseThrow(() -> new EntityNotFoundException("Receiver user not found"));
 
         Message message=new Message();
@@ -64,20 +68,20 @@ public class MessageService {
                                  .build();
         notificationService.sendNotification(message.getReceiverId().getId(),notification);
     }
-    public List<MessageResponse> findChatMessages(String chatId){
+    public List<MessageResponse> findChatMessages(UUID chatId){
 
         return messageRepository.findMessagesByChatId(chatId)
                 .stream()
-                .map(mapper::toMessageReponse)
+                .map(this::toMessageReponse)
                 .toList();
 
     }
 @Transactional
-    public void setMessagsToSeen(String chatId, Authentication authentication){
+    public void setMessagsToSeen(UUID chatId, Authentication authentication){
         Chat chat=chatRepository.findById(chatId)
                 .orElseThrow(()->new EntityNotFoundException("Chat is Not Found"));
 
-        final String recipientId=getRecipientId(chat, authentication);
+        final UUID recipientId=getRecipientId(chat, authentication);
 
         messageRepository.setMessagesToSeenByChatId(chatId,MessageState.SEEN);
         //toDo notification
@@ -91,12 +95,12 @@ public class MessageService {
     notificationService.sendNotification(recipientId,notification);
     }
 
-    public void uploadMediaMessage(String chatId, Authentication authentication, MultipartFile  multipartFile){
+    public void uploadMediaMessage(UUID chatId, Authentication authentication, MultipartFile  multipartFile){
         Chat chat=chatRepository.findById(chatId)
                 .orElseThrow(()->new EntityNotFoundException("Chat is Not Found"));
 
-        final String senderId=getSenderId(chat,authentication);
-        final String recipientId=getRecipientId(chat,authentication);
+        final UUID senderId=getSenderId(chat,authentication);
+        final UUID recipientId=getRecipientId(chat,authentication);
         final String filePath=fileService.saveFile(multipartFile,senderId);
 
 
@@ -128,14 +132,14 @@ public class MessageService {
 
     }
 
-    private String getSenderId(Chat chat, Authentication authentication) {
+    private UUID getSenderId(Chat chat, Authentication authentication) {
         if(chat.getSender().getId().equals(authentication.getName())){
             return chat.getSender().getId();
         }
         return chat.getRecipient().getId();
     }
 
-    private String getRecipientId(Chat chat, Authentication authentication) {
+    private UUID getRecipientId(Chat chat, Authentication authentication) {
         if(chat.getSender().getId().equals(authentication.getName()))
         {
           return   chat.getRecipient().getId();
@@ -143,5 +147,16 @@ public class MessageService {
         return chat.getSender().getId();
     }
 
-
+    public MessageResponse toMessageReponse(Message message) {
+        return MessageResponse.builder()
+                .id(message.getId())
+                .content(message.getContent())
+                .senderId(message.getSenderId().getId())
+                .receiverId(message.getReceiverId().getId())
+                .type(message.getType())
+                .state(message.getState())
+                .createdAt(message.getCreatedDate())
+                .media(FileUtils.readFileFromLocation(message.getMediaFilePath()))
+                .build();
+    }
 }

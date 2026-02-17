@@ -9,7 +9,7 @@
   "include": [
     "src/**/*.ts",
     "src/window-global-fix.ts"
-  ],
+, "src/app/core/services/auth.ts"  ],
   "exclude": [
     "src/**/*.spec.ts"
   ]

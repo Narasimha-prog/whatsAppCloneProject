@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -13,12 +14,12 @@ import java.time.LocalDateTime;
 @Builder
 public class ChatResponse {
 
-    private String id;
+    private UUID id;
     private String name;
     private Long unreadCount;
     private String lastMessage;
     private LocalDateTime lastMessageTime;
     private boolean isRecipientIsOnline;
-    private String senderId;
-    private String recipientId;
+    private UUID senderId;
+    private UUID recipientId;
 }

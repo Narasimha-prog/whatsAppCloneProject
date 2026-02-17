@@ -1,6 +1,6 @@
 package com.lnreddy.WhatsAppClone.auth.dto;
 
-import com.lnreddy.WhatsAppClone.user.dto.UserSummary;
+import com.lnreddy.WhatsAppClone.common.dto.UserSummary;
 import lombok.Builder;
 
 @Builder

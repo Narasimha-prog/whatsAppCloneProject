@@ -2,7 +2,6 @@ import { AfterViewChecked, Component, ElementRef, NgZone, OnDestroy, OnInit, Vie
 import { ChatList } from "../../components/chat-list/chat-list";
 import { ChatResponse, MessageRequest, MessageResponse } from '../../services/models';
 import { ChatsService, MessageService } from '../../services/services';
-import { KeycloakService } from '../../utils/keycloak/keycloak';
 import { DatePipe } from '@angular/common';
 import { PickerComponent } from '@ctrl/ngx-emoji-mart';
 import { FormsModule } from '@angular/forms';
@@ -161,7 +160,6 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   selectedChat: ChatResponse = {};
 
   constructor(
-    private keycloakService: KeycloakService,
     private chatService: ChatsService,
     private messageService: MessageService,
     private ngZone: NgZone
@@ -230,7 +228,7 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
   }
   initWebSocket() {
-    
+
   const sub = this.keycloakService.keycloak.tokenParsed?.sub;
   const token = this.keycloakService.keycloak.token;
   const subURL = `/users/${sub}/chat`;

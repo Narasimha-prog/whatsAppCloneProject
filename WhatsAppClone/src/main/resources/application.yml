@@ -1,19 +1,23 @@
 spring:
   application:
      name: WhatsAppClone
+  #file output
      file:
        uploads:
          media-output-path: ./uploads
 
+#data source
   datasource:
-    url: jdbc:postgresql://localhost:5433/whatsapp_clone
-    username: postgres
-    password: admin
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+#jpa
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: false
+    show-sql: true
     properties:
       hibernate:
         format_sql: true
@@ -23,20 +27,41 @@ spring:
   flyway:
     enabled: false
 
+
+#ouath2
+
   security:
     oauth2:
       resourceserver:
           jwt:
             issuer-uri: "http://localhost:8180/realms/WhatsClone"
 
+#dev tools
+  devtools:
+    restart:
+      enabled: true
+    livereload:
+      enabled: true
 
   servlet:
     multipart:
       enabled: true          # Enable or disable multipart support
       max-file-size: 50MB
+
+
+
+#swagger
+
 springdoc:
   default-produces-media-type: application/json
 
+#for jwt
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 360000
+
+#server port
 
 server:
   port: 7878

@@ -22,7 +22,7 @@ public record RegisterUserRequest(
         @Size(min = 8, message = "Password must be at least 8 characters")
         String password,
 
-        @Pattern(regexp = "^\\+91[6-9]{9}$",
+        @Pattern(regexp = "^\\+91[6-9]\\d{9}$",
                 message = "Phone number must contain only digits (10–15)")
         String phoneNumber
 ) {}

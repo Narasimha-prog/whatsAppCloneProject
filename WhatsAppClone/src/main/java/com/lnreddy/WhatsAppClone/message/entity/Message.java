@@ -1,16 +1,18 @@
 package com.lnreddy.WhatsAppClone.message.entity;
 
-import com.lnreddy.WhatsAppClone.chat.Chat;
+import com.lnreddy.WhatsAppClone.chat.entity.Chat;
 import com.lnreddy.WhatsAppClone.common.BaseAuditEntity;
-import com.lnreddy.WhatsAppClone.message.MessageConstants;
-import com.lnreddy.WhatsAppClone.message.MessageState;
-import com.lnreddy.WhatsAppClone.message.MessageType;
+import com.lnreddy.WhatsAppClone.message.constants.MessageConstants;
+import com.lnreddy.WhatsAppClone.message.constants.MessageState;
+import com.lnreddy.WhatsAppClone.message.constants.MessageType;
 import com.lnreddy.WhatsAppClone.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -23,20 +25,22 @@ import lombok.NoArgsConstructor;
 public class Message extends BaseAuditEntity {
 
     @Id
-    @SequenceGenerator(name = "msg_seq",sequenceName = "msg_seq",allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE,generator = "msg_seq")
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
    @Column(columnDefinition = "TEXT")
     private String content;
-   @Enumerated(EnumType.STRING)
 
+   @Enumerated(EnumType.STRING)
    private MessageState state;
-   @ManyToOne
+
+    @ManyToOne
     @JoinColumn(name = "chat_id")
     private Chat chat;
+
     @Enumerated(EnumType.STRING)
     private MessageType type;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id", nullable = false)
     private User senderId;

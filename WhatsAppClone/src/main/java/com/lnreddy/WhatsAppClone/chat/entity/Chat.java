@@ -1,7 +1,8 @@
 package com.lnreddy.WhatsAppClone.chat.entity;
 
 
-import com.lnreddy.WhatsAppClone.chat.ChatConstants;
+import com.lnreddy.WhatsAppClone.chat.constants.ChatConstants;
+import com.lnreddy.WhatsAppClone.chat.constants.ChatType;
 import com.lnreddy.WhatsAppClone.common.BaseAuditEntity;
 import com.lnreddy.WhatsAppClone.message.constants.MessageState;
 import com.lnreddy.WhatsAppClone.message.constants.MessageType;
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -32,21 +34,29 @@ public class Chat extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private User sender;
 
-    @ManyToOne
-    @JoinColumn(name = "recipient_id")
-    private User recipient;
+    @Enumerated(EnumType.STRING)
+    private ChatType chatType; // PRIVATE / GROUP
+
+    @ManyToMany
+    @JoinTable(
+            name = "chat_users",
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> users;
+
     @OneToMany(mappedBy = "chat",fetch = FetchType.LAZY)
     @OrderBy("createdDate DESC")
     private List<Message> messages;
 
+
+
     @Transient
-    public String getChatName(String senderId) {
+    public String getChatName(UUID senderId) {
+
         if (recipient.getId().equals(senderId)) {
             return sender.getFirstName() + " " + sender.getLastName();
         }
@@ -55,11 +65,11 @@ public class Chat extends BaseAuditEntity {
 
     @Transient
     public String getChatId() {
-        return sender.getId();
+        return sender.getId().toString();
     }
 
     @Transient
-    public Long getUnReadMessages(final String senderId){
+    public Long getUnReadMessages(final UUID senderId){
         return messages.stream()
                 .filter(m->m.getReceiverId().getId().equals(senderId))
                 .filter(m-> MessageState.SENT==m.getState())

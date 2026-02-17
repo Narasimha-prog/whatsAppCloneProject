@@ -1,5 +1,7 @@
 package com.lnreddy.WhatsAppClone.common.secuity;
 
+import com.lnreddy.WhatsAppClone.common.filters.JwtAuthenticationFilter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -20,7 +23,10 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecuirityConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -29,7 +35,8 @@ public class SecuirityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         req-> req
-                                        .requestMatchers("/auth/**",
+                                        .requestMatchers("/api/v1/auth/register",
+                                                         "/api/v1/auth/login",
                                                 "/v2/api-docs",
                                                 "/v3/api-docs",
                                                 "/v3/api-docs/**",
@@ -44,9 +51,9 @@ public class SecuirityConfig {
                                         .permitAll()
                                         .anyRequest()
                                         .authenticated()
-                ).oauth2ResourceServer( auth -> auth
-                        .jwt(token -> token.jwtAuthenticationConverter(new KeyCloakJwtAuthenticationConverter()))
-                );
+                ).addFilterBefore(jwtAuthenticationFilter,
+                                  UsernamePasswordAuthenticationFilter.class);
+
         return httpSecurity.build();
     }
 

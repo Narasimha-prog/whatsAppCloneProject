@@ -8,11 +8,12 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface ChatRepository extends JpaRepository<Chat,String> {
+public interface IChatRepository extends JpaRepository<Chat, UUID> {
     @Query(name = ChatConstants.FIND_CHAT_BY_SENDER_ID)
-    List<Chat> findChatsBySenderId(@Param("senderId") String userId);
+    List<Chat> findChatsBySenderId(@Param("senderId") UUID userId);
 
     @Query(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID)
-    Optional<Chat> findChatsByReceiverAndSender(@Param("senderId") String senderId,@Param("recipientId") String receiverId);
+    Optional<Chat> findChatsByReceiverAndSender(@Param("senderId") UUID senderId,@Param("recipientId") UUID receiverId);
 }

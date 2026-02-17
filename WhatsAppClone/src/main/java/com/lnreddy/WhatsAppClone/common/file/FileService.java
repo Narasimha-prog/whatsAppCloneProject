@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -23,7 +24,7 @@ public class FileService {
 
     public String saveFile(
      @NonNull MultipartFile sourceFile,
-      @NonNull      String userId)
+      @NonNull UUID userId)
     {
         final String fileUploadSubPath="users"+ File.separator+userId;
         return uploadFile(sourceFile,fileUploadSubPath);

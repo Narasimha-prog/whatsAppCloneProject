@@ -1,8 +1,8 @@
 package com.lnreddy.WhatsAppClone.message.rest;
 
-import com.lnreddy.WhatsAppClone.message.MessageRequest;
-import com.lnreddy.WhatsAppClone.message.MessageResponse;
-import com.lnreddy.WhatsAppClone.message.MessageService;
+import com.lnreddy.WhatsAppClone.message.dto.MessageRequest;
+import com.lnreddy.WhatsAppClone.message.dto.MessageResponse;
+import com.lnreddy.WhatsAppClone.message.service.MessageService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/messages")
@@ -30,7 +31,7 @@ public class MessageRestController {
 
     @PostMapping(value = "/upload-media",consumes = "multipart/form-data")
     @ResponseStatus(HttpStatus.CREATED)
-    public void uploadMedia(@RequestParam("chat-id") String chatId,
+    public void uploadMedia(@RequestParam("chat-id") UUID chatId,
              //todo add @Parameter from swagger
           @Parameter()
             @RequestParam("file") MultipartFile file,
@@ -42,12 +43,12 @@ public class MessageRestController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void setMessageToSeen(@RequestParam("chat-id") String chatId,Authentication authentication){
+    public void setMessageToSeen(@RequestParam("chat-id") UUID chatId,Authentication authentication){
         messageService.setMessagsToSeen(chatId,authentication);
     }
 
     @GetMapping("/chat/{chat-id}")
-    public ResponseEntity< List<MessageResponse>> getMessages(@PathVariable("chat-id") String chatId){
+    public ResponseEntity< List<MessageResponse>> getMessages(@PathVariable("chat-id") UUID chatId){
         return ResponseEntity.ok(messageService.findChatMessages(chatId));
     }
 

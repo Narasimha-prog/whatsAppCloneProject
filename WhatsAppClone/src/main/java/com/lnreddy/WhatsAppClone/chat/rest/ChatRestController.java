@@ -1,8 +1,9 @@
 package com.lnreddy.WhatsAppClone.chat.rest;
 
-import com.lnreddy.WhatsAppClone.chat.ChatResponse;
-import com.lnreddy.WhatsAppClone.chat.ChatService;
+import com.lnreddy.WhatsAppClone.chat.dto.ChatResponse;
+import com.lnreddy.WhatsAppClone.chat.service.ChatService;
 import com.lnreddy.WhatsAppClone.common.StringResponse;
+import com.lnreddy.WhatsAppClone.common.secuity.CustomeUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -10,26 +11,26 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/chats")
 @RequiredArgsConstructor
 @Tag(name = "Chats")
-public class ChatREstController {
+public class ChatRestController {
 
     private final ChatService chatService;
-@PostMapping
-    public ResponseEntity<StringResponse> createChat(
-            @RequestParam("sender-id") String senderId
-            ,@RequestParam("recipient-id") String recipientId
+
+     @PostMapping
+    public ResponseEntity<UUID> createChat(
+            @RequestParam("recipient-id") UUID recipientId,
+             Authentication authentication
             ){
-    final String chaatId= chatService.createChat(senderId,recipientId);
 
-    StringResponse response=StringResponse.builder()
-                              .reponse(chaatId)
-                               .build();
+         UUID chatId = chatService.createChat(authentication, recipientId);
 
-    return ResponseEntity.ok(response);
+         return ResponseEntity.ok(chatId);
+
 }
 
 @GetMapping

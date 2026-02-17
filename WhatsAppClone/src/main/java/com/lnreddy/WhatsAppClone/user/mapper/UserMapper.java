@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class UserMapper {
@@ -14,7 +15,7 @@ public class UserMapper {
         User user=new User();
 
         if(attributes.containsKey("sub")){
-            user.setId(attributes.get("sub").toString());
+            user.setId(UUID.fromString((String)attributes.get("sub")));
         }
 
         if (attributes.containsKey("given_name")) {
@@ -37,7 +38,7 @@ public class UserMapper {
     public UserResponse toUserResponse(User user) {
 
         return UserResponse.builder()
-                .id(user.getId())
+                .id(user.getId().toString())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())

@@ -1,10 +1,12 @@
 package com.lnreddy.WhatsAppClone.message.dto;
 
-import com.lnreddy.WhatsAppClone.message.MessageType;
+import com.lnreddy.WhatsAppClone.message.constants.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -13,8 +15,8 @@ import lombok.NoArgsConstructor;
 public class MessageRequest {
 
     private String content;
-    private String senderId;
-    private String receiverId;
+    private UUID senderId;
+    private UUID receiverId;
     private MessageType type;
-    private String chatId;
+    private UUID chatId;
 }

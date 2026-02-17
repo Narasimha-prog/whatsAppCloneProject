@@ -12,7 +12,7 @@ public record UserResponse (
       String lastName,
       String email,
       LocalDateTime lastSeen,
-      LocalDateTime  isOnline
+      boolean  isOnline
 ){
 
 

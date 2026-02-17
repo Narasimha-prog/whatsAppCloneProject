@@ -21,7 +21,7 @@ public class JwtService {
     private final long expirationMs;
 
 
-    public JwtUtil(@Value("${jwt.secret}") String secret,
+    public JwtService(@Value("${jwt.secret}") String secret,
                    @Value("${jwt.expiration}") long expirationMs) {
 
         this.key=Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
@@ -29,23 +29,34 @@ public class JwtService {
     }
 
     // Generate token
-    public String generateToken(String username, Set<String> roles) {
+    public String generateToken(String uuid, Set<String> roles) {
         return Jwts.builder()
-                .setSubject(username)
+                .setSubject(uuid)
                 .claim("roles", String.join(",", roles))
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key)
                 .compact();
     }
+    private Claims parseClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
+    public Set<String> getRoles(String token) {
+        Set roles = Set.copyOf(parseClaims(token).get(
+                "roles",
+                Set.class
+        ));
+        return roles;
+    }
     // Validate token
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
+            parseClaims(token);
 
             return true;
 
@@ -73,13 +84,5 @@ public class JwtService {
     }
 
     // Extract roles
-    public Set<String> getRoles(String token) {
-        String rolesStr = (String) Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody()
-                .get("roles");
-        return Set.of(rolesStr.split(","));
-    }
+
 }
