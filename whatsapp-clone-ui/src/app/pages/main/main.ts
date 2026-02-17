@@ -230,6 +230,7 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
   }
   initWebSocket() {
+    
   const sub = this.keycloakService.keycloak.tokenParsed?.sub;
   const token = this.keycloakService.keycloak.token;
   const subURL = `/users/${sub}/chat`;

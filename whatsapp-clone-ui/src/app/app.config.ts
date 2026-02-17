@@ -9,8 +9,11 @@ import { keycloakHttpInterceptor } from './utils/http/keycloak-http-interceptor'
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+
     provideZoneChangeDetection({ eventCoalescing: true }),
+
     provideRouter(routes),
+    
     provideHttpClient(
       withInterceptors([keycloakHttpInterceptor])
     ),
