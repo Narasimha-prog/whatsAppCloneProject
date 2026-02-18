@@ -58,9 +58,6 @@ public class ChatService {
         List<User> users = userRepository.findAllById(participantIds);
 
 
-        User creator = userRepository.findByPublicId(creatorId)
-                .orElseThrow(() -> new EntityNotFoundException("Creator user not found"));
-
         // Create new Chat entity
         Chat chat = new Chat();
         chat.setChatType(participantIds.size() > 1 ? ChatType.GROUP : ChatType.PRIVATE);
@@ -73,8 +70,10 @@ public class ChatService {
                     chatUser.setUser(user);
                     chatUser.setChat(chat);
                     chatUser.setRole(user.getId().equals(creatorId) ? ChatUserRole.ADMIN : ChatUserRole.MEMBER);
+
                     return chatUser;
                 }).toList();
+
 
         chat.setParticipants(chatUsers);
 
