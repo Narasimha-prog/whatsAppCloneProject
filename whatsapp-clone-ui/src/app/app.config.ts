@@ -3,17 +3,20 @@ import { provideRouter } from '@angular/router';
 
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
-import { KeycloakService } from './utils/keycloak/keycloak';
-import { keycloakHttpInterceptor } from './utils/http/keycloak-http-interceptor';
+import { jwtInterceptor } from './core/jwt-interceptor';
+
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
+
     provideZoneChangeDetection({ eventCoalescing: true }),
+
     provideRouter(routes),
+
     provideHttpClient(
-      withInterceptors([keycloakHttpInterceptor])
+      withInterceptors([jwtInterceptor])
     ),
-    provideAppInitializer(() => inject(KeycloakService).init())
+  
   ]
 };

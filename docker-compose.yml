@@ -1,5 +1,4 @@
 
-
 services:
   postgres:
     image: postgres:15
@@ -13,68 +12,8 @@ services:
     networks:
       - backend
     ports:
-      - "5433:5432"
+      - "5400:5432"
 
-
-  keycloak:
-    image: quay.io/keycloak/keycloak:24.0.1
-    container_name: keycloak
-    command:
-      - start-dev
-    environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/whatsapp_clone
-      KC_DB_USERNAME: postgres
-      KC_DB_PASSWORD: admin
-      KC_HOSTNAME_STRICT: "false"
-      KC_HOSTNAME_STRICT_HTTPS: "false"
-      KC_HTTP_ENABLED: "true"
-#      KC_HOSTNAME: localhost
-      KC_HTTP_PORT: 8080
-#      KC_HOSTNAME_PORT: 8180
-
-
-
-    depends_on:
-      - postgres
-    networks:
-      - backend
-    ports:
-      - "8180:8080"
-
-#  springboot-app:
-#    build:
-#      context: ./WhatsAppClone         # 👈 path to your module
-#      dockerfile: Dockerfile             # 👈 optional if the file is named Dockerfile
-#    container_name: springboot-app
-#    depends_on:
-#      - postgres
-#      - keycloak
-#    networks:
-#      - backend
-#    ports:
-#      - "7878:7878"
-#    environment:
-#      SPRING_PROFILES_ACTIVE: docker
-#    volumes:
-#      - ./WhatsAppClone/uploads:/app/uploads  # 👈 fixed relative path
-
-
-#  angular-app:
-#      build:
-#        context: ./whatsapp-clone-ui             # 👈 adjust to your Angular directory
-#        dockerfile: Dockerfile                # 👈 inside angular-client/
-#      container_name: angular-app
-#      ports:
-#        - "4200:80"
-#      networks:
-#        - backend
-#      restart: always
-#      depends_on:
-#        - keycloak
-#        - springboot-app
 
 volumes:
   postgres_data:

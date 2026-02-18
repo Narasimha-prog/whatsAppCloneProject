@@ -12,18 +12,10 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @EnableJpaAuditing
 @SecurityScheme(
-		name = "keycloak",
-		type = SecuritySchemeType.OAUTH2,
+		name = "jwt",
+		type = SecuritySchemeType.HTTP,
 		bearerFormat = "JWT",
-		scheme = "bearer",
-		in = SecuritySchemeIn.HEADER,
-		flows = @OAuthFlows(
-				password = @OAuthFlow(
-						authorizationUrl = "http://localhost:8180/realms/WhatsClone/protocol/openid-connect/auth",
-						tokenUrl = "http://localhost:8180/realms/WhatsClone/protocol/openid-connect/token"
-
-				)
-		)
+		scheme = "bearer"
 )
 public class WhatsAppCloneApplication {
 
