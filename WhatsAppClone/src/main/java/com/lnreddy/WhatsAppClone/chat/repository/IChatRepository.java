@@ -11,9 +11,13 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface IChatRepository extends JpaRepository<Chat, UUID> {
-    @Query(name = ChatConstants.FIND_CHAT_BY_SENDER_ID)
-    List<Chat> findChatsBySenderId(@Param("senderId") UUID userId);
+    @Query("""
+   SELECT DISTINCT c
+   FROM Chat c
+   JOIN c.participants cu
+   WHERE cu.user.id = :userId
+   ORDER BY c.createdDate DESC
+""")
+    List<Chat> findChatsBySenderId(@Param("userId") UUID userId);
 
-    @Query(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID)
-    Optional<Chat> findChatsByReceiverAndSender(@Param("senderId") UUID senderId,@Param("recipientId") UUID receiverId);
 }

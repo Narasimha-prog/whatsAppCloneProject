@@ -4,6 +4,8 @@ import com.lnreddy.WhatsAppClone.chat.dto.ChatResponse;
 import com.lnreddy.WhatsAppClone.chat.service.ChatService;
 import com.lnreddy.WhatsAppClone.common.StringResponse;
 import com.lnreddy.WhatsAppClone.common.secuity.CustomeUserDetails;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +24,19 @@ public class ChatRestController {
     private final ChatService chatService;
 
      @PostMapping
+     @Operation(security =@SecurityRequirement(name = "jwt") )
     public ResponseEntity<UUID> createChat(
-            @RequestParam("recipient-id") UUID recipientId,
-             Authentication authentication
+            @RequestParam("recipient-id") List<UUID> recipientIds,String groupName,Authentication authentication
             ){
 
-         UUID chatId = chatService.createChat(authentication, recipientId);
+         UUID chatId = chatService.createChat(authentication, recipientIds,groupName);
 
          return ResponseEntity.ok(chatId);
 
 }
 
 @GetMapping
+@Operation(security =@SecurityRequirement(name = "jwt") )
     public ResponseEntity<List<ChatResponse>> getChatsByReceiver(Authentication authentication){
 
     return ResponseEntity.ok(chatService.getChatByReceiverId(authentication));

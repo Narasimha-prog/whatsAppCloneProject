@@ -74,7 +74,7 @@ public class JwtService {
     }
 
     // Extract username
-    public String getUsername(String token) {
+    public String getUserId(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()

@@ -1,15 +1,19 @@
 package com.lnreddy.WhatsAppClone.message.service;
 
 import com.lnreddy.WhatsAppClone.chat.entity.Chat;
+import com.lnreddy.WhatsAppClone.chat.entity.ChatUser;
 import com.lnreddy.WhatsAppClone.chat.repository.IChatRepository;
 import com.lnreddy.WhatsAppClone.common.file.FileService;
 import com.lnreddy.WhatsAppClone.common.file.FileUtils;
+import com.lnreddy.WhatsAppClone.common.secuity.CustomeUserDetails;
 import com.lnreddy.WhatsAppClone.message.constants.MessageState;
 import com.lnreddy.WhatsAppClone.message.constants.MessageType;
 import com.lnreddy.WhatsAppClone.message.dto.MessageRequest;
 import com.lnreddy.WhatsAppClone.message.dto.MessageResponse;
 import com.lnreddy.WhatsAppClone.message.entity.Message;
+import com.lnreddy.WhatsAppClone.message.entity.MessageStatus;
 import com.lnreddy.WhatsAppClone.message.repository.IMessageRepository;
+import com.lnreddy.WhatsAppClone.message.repository.IMessageStatusRepository;
 import com.lnreddy.WhatsAppClone.notification.model.Notification;
 import com.lnreddy.WhatsAppClone.notification.service.NotificationService;
 import com.lnreddy.WhatsAppClone.notification.constants.NotificationType;
@@ -30,131 +34,161 @@ import java.util.UUID;
 public class MessageService {
 
     private final IMessageRepository messageRepository;
+    private final IMessageStatusRepository messageStatusRepository;
     private final IChatRepository chatRepository;
     private final FileService fileService;
     private final NotificationService notificationService;
     private final IUserRepository userRepository;
 
-    public void saveMessage(MessageRequest messageRequest){
+    /* ==========================
+       SAVE TEXT MESSAGE
+       ========================== */
+    @Transactional
+    public void saveMessage(MessageRequest messageRequest) {
 
-        Chat chat=chatRepository.findById(messageRequest.getChatId())
-                .orElseThrow(()->new EntityNotFoundException("Chat was not Found"));
+        Chat chat = chatRepository.findById(messageRequest.getChatId())
+                .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
+
         User sender = userRepository.findById(messageRequest.getSenderId())
-                .orElseThrow(() -> new EntityNotFoundException("Sender user not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Sender not found"));
 
-        User receiver = userRepository.findById(  messageRequest.getReceiverId())
-                .orElseThrow(() -> new EntityNotFoundException("Receiver user not found"));
-
-        Message message=new Message();
+        Message message = new Message();
         message.setContent(messageRequest.getContent());
         message.setChat(chat);
-        message.setSenderId(sender);
-        message.setReceiverId(receiver);
+        message.setSender(sender);
         message.setType(messageRequest.getType());
-        message.setState(MessageState.SENT);
 
-        messageRepository.save(message);
+        Message savedMessage = messageRepository.save(message);
 
-        //to_do notification
+        // Create MessageStatus for each participant except sender
+        List<User> recipients = chat.getParticipants().stream()
+                .map(ChatUser::getUser)
+                .filter(user -> !user.getId().equals(sender.getId()))
+                .toList();
 
-        Notification notification=Notification.builder()
-                                .chatId(chat.getId())
-                .messageType(messageRequest.getType())
-                .content(messageRequest.getContent())
-                .senderId(messageRequest.getSenderId())
-                .receiverId(messageRequest.getReceiverId())
-                .notificationType(NotificationType.MESSAGE)
-                .chatName(chat.getChatName(messageRequest.getSenderId()))
-                                 .build();
-        notificationService.sendNotification(message.getReceiverId().getId(),notification);
+        recipients.forEach(user -> {
+            MessageStatus status = new MessageStatus();
+            status.setMessage(savedMessage);
+            status.setUser(user);
+            status.setState(MessageState.SENT);
+            messageStatusRepository.save(status);
+
+            // Send notification
+            Notification notification = Notification.builder()
+                    .chatId(chat.getId())
+                    .content(messageRequest.getContent())
+                    .messageType(messageRequest.getType())
+                    .senderId(sender.getId())
+                    .receiverId(user.getId())
+                    .notificationType(NotificationType.MESSAGE)
+                    .chatName(chat.getChatName(sender.getId()))
+                    .build();
+
+            notificationService.sendNotification(user.getId(), notification);
+        });
     }
-    public List<MessageResponse> findChatMessages(UUID chatId){
+
+    /* ==========================
+       FETCH CHAT MESSAGES
+       ========================== */
+    @Transactional(readOnly = true)
+    public List<MessageResponse> findChatMessages(UUID chatId, Authentication authentication) {
+
+        UUID currentUserId =
+                ((CustomeUserDetails) authentication.getPrincipal()).getId();
 
         return messageRepository.findMessagesByChatId(chatId)
                 .stream()
-                .map(this::toMessageReponse)
+                .map(message -> toMessageResponse(message, currentUserId))
                 .toList();
-
-    }
-@Transactional
-    public void setMessagsToSeen(UUID chatId, Authentication authentication){
-        Chat chat=chatRepository.findById(chatId)
-                .orElseThrow(()->new EntityNotFoundException("Chat is Not Found"));
-
-        final UUID recipientId=getRecipientId(chat, authentication);
-
-        messageRepository.setMessagesToSeenByChatId(chatId,MessageState.SEEN);
-        //toDo notification
-
-    Notification notification=Notification.builder()
-            .chatId(chat.getId())
-            .senderId(getSenderId(chat,authentication))
-            .receiverId(recipientId)
-            .notificationType(NotificationType.SEEN)
-            .build();
-    notificationService.sendNotification(recipientId,notification);
     }
 
-    public void uploadMediaMessage(UUID chatId, Authentication authentication, MultipartFile  multipartFile){
-        Chat chat=chatRepository.findById(chatId)
-                .orElseThrow(()->new EntityNotFoundException("Chat is Not Found"));
+    /* ==========================
+       MARK MESSAGES AS SEEN
+       ========================== */
+    @Transactional
+    public void setMessagesToSeen(UUID chatId, Authentication authentication) {
 
-        final UUID senderId=getSenderId(chat,authentication);
-        final UUID recipientId=getRecipientId(chat,authentication);
-        final String filePath=fileService.saveFile(multipartFile,senderId);
+        UUID currentUserId =
+                ((CustomeUserDetails) authentication.getPrincipal()).getId();
 
+        messageStatusRepository.markMessagesAsSeen(
+                currentUserId,
+                chatId,
+                MessageState.SEEN
+        );
+    }
+
+    /* ==========================
+       UPLOAD MEDIA MESSAGE
+       ========================== */
+    @Transactional
+    public void uploadMediaMessage(UUID chatId,
+                                   Authentication authentication,
+                                   MultipartFile multipartFile) {
+
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
+
+        UUID senderId =
+                ((CustomeUserDetails) authentication.getPrincipal()).getId();
 
         User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new EntityNotFoundException("Sender user not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Sender not found"));
 
-        User receiver = userRepository.findById(recipientId)
-                .orElseThrow(() -> new EntityNotFoundException("Receiver user not found"));
+        String filePath = fileService.saveFile(multipartFile, senderId);
 
-        Message message=new Message();
+        Message message = new Message();
         message.setChat(chat);
-        message.setSenderId(sender);
-        message.setReceiverId(receiver);
+        message.setSender(sender);
         message.setType(MessageType.IMAGE);
-        message.setState(MessageState.SENT);
         message.setMediaFilePath(filePath);
 
-        messageRepository.save(message);
-        //toDo notification
-        Notification notification=Notification.builder()
-                .chatId(chat.getId())
-                .messageType(MessageType.IMAGE)
-                .senderId(senderId)
-                .receiverId(recipientId)
-                .notificationType(NotificationType.IMAGE)
-                .media(FileUtils.readFileFromLocation(filePath))
-                .build();
-        notificationService.sendNotification(recipientId,notification);
+        Message savedMessage = messageRepository.save(message);
 
+        List<User> recipients = chat.getParticipants().stream()
+                .map(ChatUser::getUser)
+                .filter(user -> !user.getId().equals(senderId))
+                .toList();
+
+        recipients.forEach(user -> {
+
+            MessageStatus status = new MessageStatus();
+            status.setMessage(savedMessage);
+            status.setUser(user);
+            status.setState(MessageState.SENT);
+            messageStatusRepository.save(status);
+
+            Notification notification = Notification.builder()
+                    .chatId(chat.getId())
+                    .messageType(MessageType.IMAGE)
+                    .senderId(senderId)
+                    .receiverId(user.getId())
+                    .notificationType(NotificationType.IMAGE)
+                    .media(FileUtils.readFileFromLocation(filePath))
+                    .build();
+
+            notificationService.sendNotification(user.getId(), notification);
+        });
     }
 
-    private UUID getSenderId(Chat chat, Authentication authentication) {
-        if(chat.getSender().getId().equals(authentication.getName())){
-            return chat.getSender().getId();
-        }
-        return chat.getRecipient().getId();
-    }
+    /* ==========================
+       CONVERT TO DTO
+       ========================== */
+    private MessageResponse toMessageResponse(Message message, UUID currentUserId) {
 
-    private UUID getRecipientId(Chat chat, Authentication authentication) {
-        if(chat.getSender().getId().equals(authentication.getName()))
-        {
-          return   chat.getRecipient().getId();
-        }
-        return chat.getSender().getId();
-    }
+        MessageState state = message.getStatuses().stream()
+                .filter(status -> status.getUser().getId().equals(currentUserId))
+                .map(MessageStatus::getState)
+                .findFirst()
+                .orElse(MessageState.SENT);
 
-    public MessageResponse toMessageReponse(Message message) {
         return MessageResponse.builder()
                 .id(message.getId())
                 .content(message.getContent())
-                .senderId(message.getSenderId().getId())
-                .receiverId(message.getReceiverId().getId())
+                .senderId(message.getSender().getId())
                 .type(message.getType())
-                .state(message.getState())
+                .state(state)
                 .createdAt(message.getCreatedDate())
                 .media(FileUtils.readFileFromLocation(message.getMediaFilePath()))
                 .build();

@@ -1,6 +1,6 @@
 package com.lnreddy.WhatsAppClone.chat.constants;
 
-public enum ChatRole {
+public enum ChatUserRole {
     ADMIN,
     MEMBER
 }

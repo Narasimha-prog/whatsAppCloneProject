@@ -12,42 +12,39 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "messages")
 @NamedQuery(name = MessageConstants.FIND_MESSAGES_BY_CHAT_ID,query = "SELECT m FROM Message m WHERE m.chat.id = :chatId ORDER BY m.createdDate")
-@NamedQuery(name = MessageConstants.SET_MESSAGES_TO_SEEN_BY_CHAT,query = "UPDATE Message m SET state= :newState WHERE chat.id =:chatId")
 public class Message extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-   @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String content;
-
-   @Enumerated(EnumType.STRING)
-   private MessageState state;
-
-    @ManyToOne
-    @JoinColumn(name = "chat_id")
-    private Chat chat;
 
     @Enumerated(EnumType.STRING)
     private MessageType type;
 
+    @ManyToOne
+    @JoinColumn(name = "chat_id", nullable = false)
+    private Chat chat;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "sender_id", nullable = false)
-    private User senderId;
-
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "receiver_id", nullable = false)
-    private User receiverId;
+    private User sender;
 
     private String mediaFilePath;
+
+    // For group chat read/unread status
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageStatus> statuses;
 }

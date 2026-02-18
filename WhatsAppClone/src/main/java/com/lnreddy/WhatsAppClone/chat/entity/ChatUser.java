@@ -1,6 +1,6 @@
 package com.lnreddy.WhatsAppClone.chat.entity;
 
-import com.lnreddy.WhatsAppClone.chat.constants.ChatRole;
+import com.lnreddy.WhatsAppClone.chat.constants.ChatUserRole;
 import com.lnreddy.WhatsAppClone.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -27,7 +27,7 @@ public class ChatUser {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private ChatRole role; // ADMIN / MEMBER
+    private ChatUserRole role; // ADMIN / MEMBER
 }
 
 

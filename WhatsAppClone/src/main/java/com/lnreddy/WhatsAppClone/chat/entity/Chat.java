@@ -14,8 +14,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
@@ -25,56 +27,60 @@ import java.util.UUID;
 @NoArgsConstructor
 @Table(name = "chats")
 
-@NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID,
-        query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id = :senderId OR c.recipient.id = :senderId ORDER BY createdDate DESC")
-@NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID,
-        query = "SELECT DISTINCT c FROM Chat c WHERE (c.sender.id =:senderId  AND c.recipient.id= :recipientId) OR (c.sender.id =:recipientId  AND c.recipient.id=:senderId)"
-          )
+//@NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER_ID,
+//        query = "SELECT DISTINCT c FROM Chat c WHERE (c.sender.id =:senderId  AND c.recipient.id= :recipientId) OR (c.sender.id =:recipientId  AND c.recipient.id=:senderId)"
+//          )
 public class Chat extends BaseAuditEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    private UUID id;     //id
 
 
     @Enumerated(EnumType.STRING)
-    private ChatType chatType; // PRIVATE / GROUP
+    private ChatType chatType;   // PRIVATE / GROUP
 
-    @ManyToMany
-    @JoinTable(
-            name = "chat_users",
-            joinColumns = @JoinColumn(name = "chat_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> users;
+
+    @Column(nullable = true)  // Only used for group chats
+    private String groupName;   // Optional name for group chat
+
+    @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ChatUser> participants;  //ADMIN & MEMBERS
+
+
 
     @OneToMany(mappedBy = "chat",fetch = FetchType.LAZY)
     @OrderBy("createdDate DESC")
-    private List<Message> messages;
-
+    private List<Message> messages;     //MESSAGES
 
 
     @Transient
     public String getChatName(UUID senderId) {
 
-        if (recipient.getId().equals(senderId)) {
-            return sender.getFirstName() + " " + sender.getLastName();
+        if (chatType == ChatType.PRIVATE) {
+
+            // Private chat: show the other user's name
+            return participants.stream()
+                    .map(ChatUser::getUser)
+                    .filter(u -> !u.getId().equals(senderId))
+                    .findFirst()
+                    .map(u -> u.getFirstName() + " " + u.getLastName())
+                    .orElse("Unknown");
         }
-        return recipient.getFirstName() + " " + recipient.getLastName();
+        else {
+           // For group chat, use groupName if set, otherwise fallback
+            return groupName != null ? groupName : "Group Chat (" + participants.size() + " members)";
+        }
+
+
+
     }
 
-    @Transient
-    public String getChatId() {
-        return sender.getId().toString();
-    }
 
-    @Transient
-    public Long getUnReadMessages(final UUID senderId){
-        return messages.stream()
-                .filter(m->m.getReceiverId().getId().equals(senderId))
-                .filter(m-> MessageState.SENT==m.getState())
-                .count();
-    }
+
+
+
+
 
     @Transient
     public String getLastMessage(){
@@ -88,11 +94,25 @@ public class Chat extends BaseAuditEntity {
     }
 
     @Transient
-    public LocalDateTime getLastMessageTime(){
+    public Instant getLastMessageTime(){
         if(messages != null && !messages.isEmpty()){
            return messages.get(0).getCreatedDate();
         }
         return null;
+    }
+
+    @Transient
+    public List<UUID> getParticipantsExcludeCurrentUser(UUID currentUserId) {
+
+        if (participants == null || participants.isEmpty()) {
+            return List.of();
+        }
+
+        return participants.stream()
+                .map(ChatUser::getUser)
+                .map(User::getId)
+                .filter(id -> !id.equals(currentUserId))
+                .toList();
     }
 
 }

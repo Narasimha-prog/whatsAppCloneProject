@@ -3,7 +3,9 @@ package com.lnreddy.WhatsAppClone.message.rest;
 import com.lnreddy.WhatsAppClone.message.dto.MessageRequest;
 import com.lnreddy.WhatsAppClone.message.dto.MessageResponse;
 import com.lnreddy.WhatsAppClone.message.service.MessageService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,12 +27,14 @@ public class MessageRestController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(security =@SecurityRequirement(name = "jwt") )
     public void saveMessage(@RequestBody MessageRequest messageRequest){
         messageService.saveMessage(messageRequest);
     }
 
     @PostMapping(value = "/upload-media",consumes = "multipart/form-data")
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(security =@SecurityRequirement(name = "jwt") )
     public void uploadMedia(@RequestParam("chat-id") UUID chatId,
              //todo add @Parameter from swagger
           @Parameter()
@@ -43,13 +47,15 @@ public class MessageRestController {
 
     @PatchMapping
     @ResponseStatus(HttpStatus.ACCEPTED)
+    @Operation(security =@SecurityRequirement(name = "jwt") )
     public void setMessageToSeen(@RequestParam("chat-id") UUID chatId,Authentication authentication){
-        messageService.setMessagsToSeen(chatId,authentication);
+        messageService.setMessagesToSeen(chatId, authentication);
     }
 
     @GetMapping("/chat/{chat-id}")
-    public ResponseEntity< List<MessageResponse>> getMessages(@PathVariable("chat-id") UUID chatId){
-        return ResponseEntity.ok(messageService.findChatMessages(chatId));
+    @Operation(security =@SecurityRequirement(name = "jwt") )
+    public ResponseEntity< List<MessageResponse>> getMessages(@PathVariable("chat-id") UUID chatId,Authentication authentication){
+        return ResponseEntity.ok(messageService.findChatMessages(chatId,authentication));
     }
 
 }

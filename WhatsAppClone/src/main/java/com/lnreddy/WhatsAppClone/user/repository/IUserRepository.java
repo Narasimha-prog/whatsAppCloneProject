@@ -19,7 +19,7 @@ public interface IUserRepository extends JpaRepository<User, UUID> {
       Optional<User>  findByPublicId(@Param("publicId") UUID publicId);
 
       @Query(name = UserConstants.FIND_ALL_USERS_EXCEPT_SELF)
-      List<User> findUsersExceptSelf(@Param("publicId") String user);
+      List<User> findUsersExceptSelf(@Param("publicId") UUID user);
 
       boolean existsByEmail(String email);
 

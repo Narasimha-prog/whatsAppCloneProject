@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.UUID;
 
 public interface IMessageRepository extends JpaRepository<Message, UUID> {
+
+    //to get messages per chatId
     @Query(name = MessageConstants.FIND_MESSAGES_BY_CHAT_ID)
     List<Message> findMessagesByChatId(@Param("chatId") UUID chatId);
 
-    @Query(name = MessageConstants.SET_MESSAGES_TO_SEEN_BY_CHAT)
-    @Modifying
-    void setMessagesToSeenByChatId(@Param("chatId") UUID chatId,@Param("newState") MessageState messageState);
+
 }

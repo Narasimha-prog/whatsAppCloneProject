@@ -2,6 +2,7 @@ package com.lnreddy.WhatsAppClone.user.entity;
 
 
 import com.lnreddy.WhatsAppClone.chat.entity.Chat;
+import com.lnreddy.WhatsAppClone.chat.entity.ChatUser;
 import com.lnreddy.WhatsAppClone.common.BaseAuditEntity;
 import com.lnreddy.WhatsAppClone.user.constants.UserConstants;
 import jakarta.persistence.*;
@@ -46,11 +47,9 @@ public class User extends BaseAuditEntity {
 
     private LocalDateTime lastSeen;
 
-    @OneToMany(mappedBy = "sender")
-    private List<Chat> chatAsSender;
+    @OneToMany(mappedBy = "user")
+    private List<ChatUser> chatUsers;
 
-    @OneToMany(mappedBy = "recipient")
-    private List<Chat> chatAsRecipient;
 
     public boolean isUserOnline(){
         return lastSeen != null && lastSeen.isAfter(LocalDateTime.now().minusMinutes(LAST_ACTIVE_INTERVAL));
