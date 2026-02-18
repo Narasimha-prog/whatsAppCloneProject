@@ -1,1 +1,68 @@
-<p>register works!</p>
+<div class="register-container">
+
+  <h2>Create Account</h2>
+
+  <form (ngSubmit)="register()">
+
+    <input
+      type="text"
+      placeholder="first name"
+      [(ngModel)]="firstName"
+      name="username"
+      required
+    />
+
+     <input
+      type="text"
+      placeholder="last name"
+      [(ngModel)]="lastName"
+      name="username"
+      required
+    />
+
+    <input
+      type="email"
+      placeholder="Email"
+      [(ngModel)]="email"
+      name="email"
+      required
+    />
+    
+
+     <input
+      type="text"
+      placeholder="phone number"
+      [(ngModel)]="phoneNumber"
+      name="phoneNumber"
+      required
+    />
+
+
+
+    <input
+      type="password"
+      placeholder="Password"
+      [(ngModel)]="password"
+      name="password"
+      required
+    />
+
+    <button type="submit" [disabled]="loading">
+      {{ loading ? 'Creating...' : 'Register' }}
+    </button>
+
+  </form>
+@if(errorMessage){
+
+  <p class="error" >
+    {{ errorMessage }}
+  </p>
+
+}
+  <p>
+    Already have an account?
+    <a routerLink="/login">Login</a>
+  </p>
+
+</div>
+

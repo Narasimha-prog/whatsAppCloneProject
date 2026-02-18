@@ -10,6 +10,7 @@ import SockJS from 'sockjs-client';
 import * as stomp from '@stomp/stompjs';
 import { Notification } from './notification';
 import { AuthService } from '../../core/services/auth';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -21,8 +22,10 @@ import { AuthService } from '../../core/services/auth';
 export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
     @ViewChild('scrollableDiv') scrollableDiv!: ElementRef<HTMLDivElement>;
-  socketClient: any = null;
-  private notificationSubscription: any;
+    
+    socketClient: any = null;
+
+    private notificationSubscription: any;
 
   wrapMessage(arg0: string | undefined) {
     throw new Error('Method not implemented.');
@@ -164,7 +167,8 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
     private chatService: ChatsService,
     private messageService: MessageService,
     private ngZone: NgZone,
-    private authService:AuthService
+    private authService:AuthService,
+     private router: Router
 
   ) { }
 
@@ -219,11 +223,16 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
   }
 
-  userProfile() {
-    window.location.href = '/profile';
-  }
-
-
+  // userProfile() {
+  //  this.authService.login()
+  // }
+ register(){
+  
+   this.router.navigate(['/register']);
+ }
+isLoggedIn(): boolean {
+  return !!this.authService.getToken();
+}
   ngOnInit(): void {
     this.initWebSocket();
     this.getAllChats();
@@ -231,8 +240,8 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   }
   initWebSocket() {
 
-  const sub = this.authService.getUserId;
-  const token = this.authService.getToken;
+  const sub = this.authService.getUserId();
+  const token = this.authService.getToken();
   const subURL = `/users/${sub}/chat`;
 
   this.socketClient = new stomp.Client({

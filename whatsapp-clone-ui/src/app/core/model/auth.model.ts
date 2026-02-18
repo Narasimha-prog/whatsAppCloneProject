@@ -1,7 +1,9 @@
 export interface RegisterRequest {
+
   firstName: string;
   lastName: string;
   email: string;
+  phoneNumber:string;
   password: string;
 }
 
@@ -10,4 +12,5 @@ export interface AuthResponse {
   tokenType: string;
   expiresIn: number;
   issuedAt: number;
+  token:string
 }
