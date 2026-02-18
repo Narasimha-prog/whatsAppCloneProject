@@ -9,6 +9,7 @@ import { EmojiData } from '@ctrl/ngx-emoji-mart/ngx-emoji';
 import SockJS from 'sockjs-client';
 import * as stomp from '@stomp/stompjs';
 import { Notification } from './notification';
+import { AuthService } from '../../core/services/auth';
 
 
 @Component({
@@ -64,14 +65,14 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
 
   }
   private getSenderId(): string {
-    if (this.selectedChat.senderId === this.keycloakService.userId) {
+    if (this.selectedChat.senderId === this.authService.getUserId()) {
       return this.selectedChat.senderId as string;
     }
     return this.selectedChat.recipientId as string;
   }
 
   private getReceiverId(): string {
-    if (this.selectedChat.senderId === this.keycloakService.userId) {
+    if (this.selectedChat.senderId === this.authService.getUserId()) {
       return this.selectedChat.recipientId as string;
     }
     return this.selectedChat.senderId as string;
@@ -152,7 +153,7 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   isSelfMessage(message: MessageResponse) {
 
 
-    return message.senderId === this.keycloakService.userId;
+    return message.senderId === this.authService.getUserId();
   }
 
   chatMessages: MessageResponse[] = [];
@@ -162,7 +163,8 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   constructor(
     private chatService: ChatsService,
     private messageService: MessageService,
-    private ngZone: NgZone
+    private ngZone: NgZone,
+    private authService:AuthService
 
   ) { }
 
@@ -218,7 +220,7 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   }
 
   userProfile() {
-    this.keycloakService.accountManagement();
+    window.location.href = '/profile';
   }
 
 
@@ -229,8 +231,8 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
   }
   initWebSocket() {
 
-  const sub = this.keycloakService.keycloak.tokenParsed?.sub;
-  const token = this.keycloakService.keycloak.token;
+  const sub = this.authService.getUserId;
+  const token = this.authService.getToken;
   const subURL = `/users/${sub}/chat`;
 
   this.socketClient = new stomp.Client({
@@ -345,7 +347,7 @@ export class Main implements OnInit, OnDestroy ,AfterViewChecked{
     }
 
   logout() {
-      this.keycloakService.logOut();
+      this.authService.logout();
     }
   
 
