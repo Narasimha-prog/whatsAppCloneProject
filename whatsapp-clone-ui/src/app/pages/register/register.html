@@ -1,68 +1,30 @@
-<div class="register-container">
-
-  <h2>Create Account</h2>
-
-  <form (ngSubmit)="register()">
-
-    <input
-      type="text"
-      placeholder="first name"
-      [(ngModel)]="firstName"
-      name="username"
-      required
-    />
-
-     <input
-      type="text"
-      placeholder="last name"
-      [(ngModel)]="lastName"
-      name="username"
-      required
-    />
-
-    <input
-      type="email"
-      placeholder="Email"
-      [(ngModel)]="email"
-      name="email"
-      required
-    />
-    
-
-     <input
-      type="text"
-      placeholder="phone number"
-      [(ngModel)]="phoneNumber"
-      name="phoneNumber"
-      required
-    />
-
-
-
-    <input
-      type="password"
-      placeholder="Password"
-      [(ngModel)]="password"
-      name="password"
-      required
-    />
-
-    <button type="submit" [disabled]="loading">
-      {{ loading ? 'Creating...' : 'Register' }}
-    </button>
-
-  </form>
-@if(errorMessage){
-
-  <p class="error" >
-    {{ errorMessage }}
-  </p>
-
-}
-  <p>
-    Already have an account?
-    <a routerLink="/login">Login</a>
-  </p>
-
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <div class="card shadow p-4">
+        <h2 class="text-center mb-4">Create Account</h2>
+        <form (ngSubmit)="register()">
+          <div class="mb-3">
+            <input type="text" placeholder="First Name" [(ngModel)]="firstName" name="firstName" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <input type="text" placeholder="Last Name" [(ngModel)]="lastName" name="lastName" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <input type="email" placeholder="Email" [(ngModel)]="email" name="email" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <input type="text" placeholder="Phone Number" [(ngModel)]="phoneNumber" name="phoneNumber" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <input type="password" placeholder="Password" [(ngModel)]="password" name="password" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-primary w-100">{{ loading ? 'Creating...' : 'Register' }}</button>
+        </form>
+        <p class="text-center mt-3">
+          Already have an account? <a routerLink="/login">Login</a>
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
-

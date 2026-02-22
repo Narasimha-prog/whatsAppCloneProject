@@ -4,4 +4,5 @@
 
 export { MessageService } from './services/message.service';
 export { ChatsService } from './services/chats.service';
+export { AuthenticationServiceService } from './services/authentication-service.service';
 export { UserService } from './services/user.service';

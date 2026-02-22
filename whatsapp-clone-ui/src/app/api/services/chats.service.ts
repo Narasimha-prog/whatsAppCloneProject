@@ -16,7 +16,6 @@ import { createChat } from '../fn/chats/create-chat';
 import { CreateChat$Params } from '../fn/chats/create-chat';
 import { getChatsByReceiver } from '../fn/chats/get-chats-by-receiver';
 import { GetChatsByReceiver$Params } from '../fn/chats/get-chats-by-receiver';
-import { StringResponse } from '../models/string-response';
 
 @Injectable({ providedIn: 'root' })
 export class ChatsService extends BaseService {
@@ -58,7 +57,7 @@ export class ChatsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  createChat$Response(params: CreateChat$Params, context?: HttpContext): Observable<StrictHttpResponse<StringResponse>> {
+  createChat$Response(params: CreateChat$Params, context?: HttpContext): Observable<StrictHttpResponse<string>> {
     return createChat(this.http, this.rootUrl, params, context);
   }
 
@@ -68,9 +67,9 @@ export class ChatsService extends BaseService {
    *
    * This method doesn't expect any request body.
    */
-  createChat(params: CreateChat$Params, context?: HttpContext): Observable<StringResponse> {
+  createChat(params: CreateChat$Params, context?: HttpContext): Observable<string> {
     return this.createChat$Response(params, context).pipe(
-      map((r: StrictHttpResponse<StringResponse>): StringResponse => r.body)
+      map((r: StrictHttpResponse<string>): string => r.body)
     );
   }
 

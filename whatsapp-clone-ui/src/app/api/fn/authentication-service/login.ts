@@ -8,18 +8,17 @@ import { filter, map } from 'rxjs/operators';
 import { StrictHttpResponse } from '../../strict-http-response';
 import { RequestBuilder } from '../../request-builder';
 
-import { StringResponse } from '../../models/string-response';
+import { AuthUserRequest } from '../../models/auth-user-request';
+import { AuthUserResponse } from '../../models/auth-user-response';
 
-export interface CreateChat$Params {
-  'sender-id': string;
-  'recipient-id': string;
+export interface Login$Params {
+      body: AuthUserRequest
 }
 
-export function createChat(http: HttpClient, rootUrl: string, params: CreateChat$Params, context?: HttpContext): Observable<StrictHttpResponse<StringResponse>> {
-  const rb = new RequestBuilder(rootUrl, createChat.PATH, 'post');
+export function login(http: HttpClient, rootUrl: string, params: Login$Params, context?: HttpContext): Observable<StrictHttpResponse<AuthUserResponse>> {
+  const rb = new RequestBuilder(rootUrl, login.PATH, 'post');
   if (params) {
-    rb.query('sender-id', params['sender-id'], {});
-    rb.query('recipient-id', params['recipient-id'], {});
+    rb.body(params.body, 'application/json');
   }
 
   return http.request(
@@ -27,9 +26,9 @@ export function createChat(http: HttpClient, rootUrl: string, params: CreateChat
   ).pipe(
     filter((r: any): r is HttpResponse<any> => r instanceof HttpResponse),
     map((r: HttpResponse<any>) => {
-      return r as StrictHttpResponse<StringResponse>;
+      return r as StrictHttpResponse<AuthUserResponse>;
     })
   );
 }
 
-createChat.PATH = '/api/v1/chats';
+login.PATH = '/api/v1/auth/login';

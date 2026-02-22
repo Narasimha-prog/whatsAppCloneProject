@@ -1,94 +1,95 @@
 import { Component, input, InputSignal, output, ViewEncapsulation } from '@angular/core';
-import { ChatResponse, UserResponse } from '../../services/models';
-import {DatePipe} from '@angular/common';
-import { ChatsService, UserService } from '../../services/services';
+import { ChatResponse, UserResponse } from '../../api/models';
+import { DatePipe } from '@angular/common';
+import { ChatsService, UserService } from '../../api/services';
 import { AuthService } from '../../core/services/auth';
 
 @Component({
   selector: 'app-chat-list',
-  imports: [ DatePipe],
+  imports: [DatePipe],
   templateUrl: './chat-list.html',
   styleUrl: './chat-list.scss',
-    encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None
 })
 export class ChatList {
 
-    chats: InputSignal<ChatResponse[]> =input<ChatResponse[]>([]);
-    searchNewContact =false;
-    contacts: Array<UserResponse>=[];
-    chatSelected=output<ChatResponse>();
+  chats: InputSignal<ChatResponse[]> = input<ChatResponse[]>([]);
+  searchNewContact = false;
+  contacts: Array<UserResponse> = [];
+  chatSelected = output<ChatResponse>();
 
-  constructor( 
+  constructor(
     private chatService: ChatsService,
     private userService: UserService,
-     private authService: AuthService
-  ){
-    
-  }
- selectContact(contact: UserResponse) {
-  const existingChat = this.chats().find(
-    chat => chat.recipientId === contact.id || chat.senderId === contact.id
-  );
+    private authService: AuthService
+  ) {}
 
-  if (existingChat) {
-    // Chat already exists, just select it
-    this.chatSelected.emit(existingChat);
-    this.searchNewContact = false;
-    return;
-  }
+  // ✅ SINGLE CHAT CREATION ONLY
+  selectContact(contact: UserResponse) {
+
+    const currentUserId = this.authService.getUserId();
+
+    // 🔥 Check existing single chat
+    const existingChat = this.chats().find(chat =>
+      chat.chatType=='PRIVATE' &&
+      chat.participantIds?.includes(currentUserId!) &&
+      chat.participantIds?.includes(contact.id!)
+
+    );
+
+    if (existingChat) {
+      this.chatSelected.emit(existingChat);
+      this.searchNewContact = false;
+      return;
+    }
+
+    // 🔥 Create new single chat
     this.chatService.createChat({
-      'sender-id': this.authService.getUserId() as string,
-      'recipient-id': contact.id as string
-    }).subscribe({
-      next: (res) => {
+     'recipient-id': [ contact.id!]
+    }).subscribe(
+      {
+      next: (chatId:string) => {
         const chat: ChatResponse = {
-          id: res.reponse,
+          id: chatId,
           name: contact.firstName + ' ' + contact.lastName,
-          recipientIsOnline: contact.online,
-          lastMessageTime: contact.lastSeen,
-          senderId: this.authService.getUserId(),
-          recipientId: contact.id
+          participantIds: [contact.id!],
+          chatType: "PRIVATE",
+        
         };
+
         this.chats().unshift(chat);
         this.searchNewContact = false;
         this.chatSelected.emit(chat);
       }
     });
-
   }
-wrapMessage(lastmessage: string|undefined): string {
 
-  if(lastmessage && lastmessage.length <=20){
-    return lastmessage;
+  wrapMessage(lastMessage: string | undefined): string {
+    if (!lastMessage) return '';
+    if (lastMessage.length <= 20) return lastMessage;
+    return lastMessage.substring(0, 17) + "...";
   }
-  return lastmessage?.substring(0,17)+"...";
-}
 
-chatsClicked(chat: ChatResponse) {
-       this.chatSelected.emit(chat);
-}
-searchContact() {
-   this.userService.getAllUsers().subscribe({
-    next: (users)=>  {
-      this.contacts= users;
-      this.searchNewContact=true;
-    }
-   })
-}
-
-trackByChatId(index: number, chat: ChatResponse): string {
-  if (chat.id) {
-    return chat.id;
+  // ✅ Works for both group and single
+  chatsClicked(chat: ChatResponse) {
+    this.chatSelected.emit(chat);
   }
-  return index.toString(); // fallback for undefined id
-}
 
-
-trackByContactId(index: number, contact: UserResponse): string {
-  if (contact.id) {
-    return contact.id;
+  searchContact() {
+    this.userService.getAllUsers().subscribe({
+      next: (users) => {
+        this.contacts = users;
+        this.searchNewContact = true;
+      }
+    });
   }
-  return index.toString(); // fallback for undefined id
-}
+
+  trackByChatId(index: number, chat: ChatResponse): string {
+    return chat.id ?? index.toString();
+  }
+
+  trackByContactId(index: number, contact: UserResponse): string {
+    return contact.id ?? index.toString();
+  }
 
 }

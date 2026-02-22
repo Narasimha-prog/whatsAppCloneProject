@@ -1,30 +1,36 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../core/services/auth';
+import { Router, RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login',
-  imports: [],
+  imports: [CommonModule,FormsModule,RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.scss'
 })
 export class Login {
 
 
-  email="";
+  email = '';
+  password = '';
+  errorMessage = '';
 
-  password="";
+  constructor(private authService: AuthService, private router: Router) {}
 
-  constructor(
-
-    private authService:AuthService,
-  ){
-
-  }
-
-
-  logIn(){
-
-
+  login() {
+    this.authService.login({
+      email: this.email,
+      password: this.password
+    }).subscribe({
+      next: (res) => {
+        this.router.navigate(['/']);
+      },
+      error: () => {
+        this.errorMessage = 'Invalid credentials';
+      }
+    });
   }
 
 }

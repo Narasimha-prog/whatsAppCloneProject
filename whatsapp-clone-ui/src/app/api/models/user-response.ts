@@ -6,7 +6,7 @@ export interface UserResponse {
   email?: string;
   firstName?: string;
   id?: string;
+  isOnline?: boolean;
   lastName?: string;
   lastSeen?: string;
-  online?: boolean;
 }

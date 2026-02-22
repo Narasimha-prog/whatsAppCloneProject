@@ -1,13 +1,13 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../core/services/auth';
-import { Router } from '@angular/router';
-import { RegisterRequest } from '../../core/model/auth.model';
+import { Router, RouterLink } from '@angular/router';
+import { RegisterUserRequest } from '../../api/models';
 import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-register',
-  imports: [FormsModule,CommonModule],
+  imports: [FormsModule,CommonModule,RouterLink],
   templateUrl: './register.html',
   styleUrl: './register.scss'
 })
@@ -23,11 +23,11 @@ export class Register {
 
   password="";
 
-phoneNumber="";
+  phoneNumber="";
 
-loading=false;
+  loading=false;
 
-errorMessage="";
+  errorMessage="";
 
   constructor(
     private authService:AuthService,
@@ -37,7 +37,6 @@ errorMessage="";
   }
 
     register() {
-
     if (!this.firstName || !this.lastName|| !this.email || !this.password) {
       this.errorMessage = 'All fields are required';
       return;
@@ -46,7 +45,7 @@ errorMessage="";
     this.loading = true;
     this.errorMessage = '';
 
-    const request: RegisterRequest = {
+    const request: RegisterUserRequest = {
       firstName: this.firstName,
       lastName: this.lastName,
       email:this.email,
@@ -54,7 +53,9 @@ errorMessage="";
       password: this.password
     };
 
-    this.authService.register(request).subscribe({
+    this.authService.register({
+      body:request
+    }).subscribe({
 
       next: () => {
         // token already saved inside AuthService

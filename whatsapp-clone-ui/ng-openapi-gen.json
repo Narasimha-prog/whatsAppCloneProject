@@ -1,0 +1,7 @@
+{
+  "input": "src/openapi/openapi.json",
+  "output": "src/app/api",
+  "generateServices": true,
+  "useOptions": false,
+  "strict": true
+}

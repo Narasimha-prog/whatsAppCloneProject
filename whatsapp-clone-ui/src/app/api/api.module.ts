@@ -8,6 +8,7 @@ import { ApiConfiguration, ApiConfigurationParams } from './api-configuration';
 
 import { MessageService } from './services/message.service';
 import { ChatsService } from './services/chats.service';
+import { AuthenticationServiceService } from './services/authentication-service.service';
 import { UserService } from './services/user.service';
 
 /**
@@ -20,6 +21,7 @@ import { UserService } from './services/user.service';
   providers: [
     MessageService,
     ChatsService,
+    AuthenticationServiceService,
     UserService,
     ApiConfiguration
   ],
