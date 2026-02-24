@@ -236,7 +236,7 @@ export class Main implements OnInit, OnDestroy, AfterViewChecked {
             content: notification.content,
             type: notification.messageType,
             createdAt: new Date().toISOString(),
-            seenBy: notification.seenBy || []
+            seenBy: notification.receiverIds || []
           };
 
           this.chatMessages.push(message);
@@ -254,7 +254,7 @@ export class Main implements OnInit, OnDestroy, AfterViewChecked {
           );
 
           if (msg) {
-            msg.seenBy = [...(msg.seenBy || []), notification.userId];
+            msg.seenBy = [...(msg.seenBy || []), notification.senderId!];
           }
         }
 
@@ -300,5 +300,9 @@ export class Main implements OnInit, OnDestroy, AfterViewChecked {
 
   logout() {
     this.authService.logout();
+  }
+
+  login(){
+    this.router.navigate(['login'])
   }
 }

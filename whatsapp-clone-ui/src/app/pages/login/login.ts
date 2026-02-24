@@ -20,17 +20,11 @@ export class Login {
   constructor(private authService: AuthService, private router: Router) {}
 
   login() {
-    this.authService.login({
-      email: this.email,
-      password: this.password
-    }).subscribe({
-      next: (res) => {
-        this.router.navigate(['/']);
-      },
-      error: () => {
-        this.errorMessage = 'Invalid credentials';
-      }
-    });
-  }
+    this.authService.login(   {
+      body: {email: this.email,
+      password: this.password}
+      
+    })
 
+}
 }

@@ -35,14 +35,14 @@
                                 <span>{{selectedChat.name}}</span>
 
                                 <div class="d-flex gap-1 align-items-center">
-                                    @if (selectedChat.recipientIsOnline) {
+                                    <!-- @if (selectedChat?.participantIds.) {
                                     <small class="online-status"></small>
                                     <small>Online</small>
                                     }
                                     @else {
                                     <small class="offline-status"></small>
                                     <small>Offline</small>
-                                    }
+                                    } -->
 
                                 </div>
                             </div>
@@ -72,7 +72,7 @@
                                 <small class="text-black-50">
                                     {{message.createdAt | date:"HH:mm"}}
 
-                                    @if(message.state === 'SENT'){
+                                    <!-- @if(message.state === 'SENT'){
                                     <span>
                                         <i class="fas fa-check"></i>
                                     </span>
@@ -82,7 +82,7 @@
                                         <i class="fas fa-check seen"></i>
                                         <i class="fas fa-check seen ml-neg"></i>
                                     </span>
-                                    }
+                                    } -->
                                 </small>
 
 
@@ -130,10 +130,11 @@
                                      title="Pick Your Emoji..."
                                      emoji="smile"
                                      class="emoji-panel"
-                                     (emojiClick)="onSelectEmojis($event)"
+                                     (emojiClick)="onSelectEmojis($event)"     
                                      >
 
                                      </emoji-mart>
+                                      <!-- (click)="onClick()" -->
                                   }
                            
                                   <input type="text"
@@ -144,7 +145,7 @@
 
                                    [(ngModel)]="messageContent"
                                    (keydown)="keyDown($event)"
-                                   (click)="onClick()"
+                                  
                                   >
                             @if (messageContent) {
                                 <i class="fas fa-paper-plane  cursor-ponter" (click)="sendMessage()"></i>

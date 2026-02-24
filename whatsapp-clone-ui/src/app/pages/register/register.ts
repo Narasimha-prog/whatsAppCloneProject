@@ -55,17 +55,7 @@ export class Register {
 
     this.authService.register({
       body:request
-    }).subscribe({
-
-      next: () => {
-        // token already saved inside AuthService
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        this.errorMessage = err.error?.message || 'Registration failed';
-        this.loading = false;
-      }
-    });
+    })
   }
 
 

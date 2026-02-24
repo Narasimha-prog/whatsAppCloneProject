@@ -5,6 +5,7 @@ import { AuthenticationServiceService } from '../../api/services';
 import { Register$Params } from '../../api/fn/authentication-service/register';
 import { AuthUserResponse, UserSummary } from '../../api/models';
 import { Login$Params } from '../../api/fn/authentication-service/login';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -16,23 +17,34 @@ export class AuthService {
 
   private apiUrl = 'http://localhost:/api/v1/auth';
 
-  constructor(private auth: AuthenticationServiceService,
+  constructor(private auth: AuthenticationServiceService,private router:Router
   ) {}
 
   register(request: Register$Params) {
-    return this.auth.register(request).pipe(
-      tap(
-        
-      )
-    )
+    return this.auth.register(request).subscribe(
+      {
+      next:  (value)  =>{
+         localStorage.setItem(this.TOKEN_KEY,value.accessToken as string);
+        localStorage.setItem(this.USER_KEY, JSON.stringify(value.user));
+        this.router.navigate(['/'])
+      },
+      error: (err) => console.log(err)
+     }
+    )    
+    
   } 
 
   login(request: Login$Params){
     return this.auth.login(request).subscribe(
-      (value)  =>{
+      
+     {
+      next:  (value)  =>{
          localStorage.setItem(this.TOKEN_KEY,value.accessToken as string);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(value.user))
-      }
+        localStorage.setItem(this.USER_KEY, JSON.stringify(value.user));
+        this.router.navigate(['/'])
+      },
+      error: (err) => console.log(err)
+     }
     )    
   }
 
@@ -44,6 +56,8 @@ export class AuthService {
   logout() {
     localStorage.removeItem(this.TOKEN_KEY);
      localStorage.removeItem(this.USER_KEY);
+     this.router.navigate(['login'])
+     
   }
 
   getToken(): string | null {

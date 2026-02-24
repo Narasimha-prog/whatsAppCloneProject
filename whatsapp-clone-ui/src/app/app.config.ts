@@ -8,6 +8,7 @@ import { jwtInterceptor } from './core/jwt-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    
     provideBrowserGlobalErrorListeners(),
 
     provideZoneChangeDetection({ eventCoalescing: true }),
