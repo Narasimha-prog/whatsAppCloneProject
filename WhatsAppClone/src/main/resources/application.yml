@@ -28,13 +28,13 @@ spring:
     enabled: false
 
 
-#ouath2
-
-  security:
-    oauth2:
-      resourceserver:
-          jwt:
-            issuer-uri: "http://localhost:8180/realms/WhatsClone"
+##ouath2
+#
+#  security:
+#    oauth2:
+#      resourceserver:
+#          jwt:
+#            issuer-uri: "http://localhost:8180/realms/WhatsClone"
 
 #dev tools
   devtools:

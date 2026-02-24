@@ -15,8 +15,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -61,7 +63,7 @@ public class SecuirityConfig {
     public CorsFilter corsFilter() {
   CorsConfiguration config = new CorsConfiguration();
   config.setAllowCredentials(true);
-       config.setAllowedOrigins(Collections.singletonList("http://localhost:4200"));            // Allow requests from any domain
+       config.setAllowedOrigins(List.of("http://localhost:4200", "https://whats-app-clone-project-rho.vercel.app/"));            // Allow requests from any domain
         config.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE,

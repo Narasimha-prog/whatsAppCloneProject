@@ -29,5 +29,5 @@ public class MessageStatus {
     private User user;
 
     @Enumerated(EnumType.STRING)
-    private MessageState state; // SENT, SEEN
+    private MessageState state; // SENT, SEEN,DELIVERED
 }

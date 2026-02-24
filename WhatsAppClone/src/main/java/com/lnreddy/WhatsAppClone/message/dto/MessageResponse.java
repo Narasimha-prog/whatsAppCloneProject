@@ -19,11 +19,10 @@ import java.util.UUID;
 public class MessageResponse {
 
     private UUID id;
-    private String content;
-    private MessageType type;
-    private MessageState state;
+    private String content;   //message data
+    private MessageType type;   //txt,...
     private UUID senderId;
-    private List<UUID> receiverIds;
+    private List<UUID> seenBy;
     private Instant createdAt;
     private byte[] media;
 }

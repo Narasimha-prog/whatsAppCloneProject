@@ -1,5 +1,6 @@
 package com.lnreddy.WhatsAppClone.notification.model;
 
+import com.lnreddy.WhatsAppClone.message.constants.MessageState;
 import com.lnreddy.WhatsAppClone.message.constants.MessageType;
 import com.lnreddy.WhatsAppClone.notification.constants.NotificationType;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -16,11 +18,13 @@ import java.util.UUID;
 public class Notification {
 
     private UUID chatId;
-    private String content;
+    private UUID messageId;
     private UUID senderId;
-    private UUID receiverId;
-    private String chatName;
+    private String content;
     private MessageType messageType;
-    private NotificationType notificationType;
+    private NotificationType notificationType; // MESSAGE, IMAGE, SEEN
+    private UUID userId; // who saw it
+    private List<UUID> seenBy;
     private byte[] media;
+
 }

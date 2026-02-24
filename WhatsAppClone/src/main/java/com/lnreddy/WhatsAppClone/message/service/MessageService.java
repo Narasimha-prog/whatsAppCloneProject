@@ -79,9 +79,8 @@ public class MessageService {
                     .content(messageRequest.getContent())
                     .messageType(messageRequest.getType())
                     .senderId(sender.getId())
-                    .receiverId(user.getId())
                     .notificationType(NotificationType.MESSAGE)
-                    .chatName(chat.getChatName(sender.getId()))
+                    .chatId(sender.getId())
                     .build();
 
             notificationService.sendNotification(user.getId(), notification);
@@ -163,7 +162,6 @@ public class MessageService {
                     .chatId(chat.getId())
                     .messageType(MessageType.IMAGE)
                     .senderId(senderId)
-                    .receiverId(user.getId())
                     .notificationType(NotificationType.IMAGE)
                     .media(FileUtils.readFileFromLocation(filePath))
                     .build();
@@ -183,14 +181,19 @@ public class MessageService {
                 .findFirst()
                 .orElse(MessageState.SENT);
 
+        List<UUID> seen=message.getStatuses().stream()
+                .filter(status-> status.getState()==MessageState.SEEN)
+                .map(status->status.getUser().getId())
+                .toList();
+
         return MessageResponse.builder()
                 .id(message.getId())
                 .content(message.getContent())
                 .senderId(message.getSender().getId())
                 .type(message.getType())
-                .state(state)
                 .createdAt(message.getCreatedDate())
                 .media(FileUtils.readFileFromLocation(message.getMediaFilePath()))
+                .seenBy(seen)
                 .build();
     }
 }

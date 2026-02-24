@@ -26,7 +26,7 @@ public class ChatRestController {
      @PostMapping
      @Operation(security =@SecurityRequirement(name = "jwt") )
     public ResponseEntity<UUID> createChat(
-            @RequestParam("recipient-id") List<UUID> recipientIds,String groupName,Authentication authentication
+            @RequestParam("recipient-id") List<UUID> recipientIds, @RequestParam(value = "group-name",required = false) String groupName,Authentication authentication
             ){
 
          UUID chatId = chatService.createChat(authentication, recipientIds,groupName);
