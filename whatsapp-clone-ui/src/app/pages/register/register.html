@@ -19,11 +19,25 @@
           <div class="mb-3">
             <input type="password" placeholder="Password" [(ngModel)]="password" name="password" class="form-control" required>
           </div>
-          <button type="submit" class="btn btn-primary w-100">{{ loading ? 'Creating...' : 'Register' }}</button>
+          <button type="submit" 
+          class="btn btn-primary w-100">
+          
+            <!-- Spinner -->
+            <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+          
+          {{ loading ? 'Creating...' : 'Register' }}
+
+
+          </button>
+          <!-- Error Message -->
+          <div *ngIf="errorMessage" class="alert alert-danger mt-3 text-center">
+            {{ errorMessage }}
+          </div>
         </form>
         <p class="text-center mt-3">
           Already have an account? <a routerLink="/login">Login</a>
         </p>
+        
       </div>
     </div>
   </div>

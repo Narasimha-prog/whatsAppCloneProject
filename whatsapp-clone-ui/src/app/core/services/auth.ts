@@ -15,38 +15,27 @@ export class AuthService {
   private readonly TOKEN_KEY = 'accessToken';
   private readonly USER_KEY = 'currentUser';
 
-  private apiUrl = 'http://localhost:/api/v1/auth';
 
   constructor(private auth: AuthenticationServiceService,private router:Router
   ) {}
 
-  register(request: Register$Params) {
-    return this.auth.register(request).subscribe(
-      {
-      next:  (value)  =>{
-         localStorage.setItem(this.TOKEN_KEY,value.accessToken as string);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(value.user));
-        this.router.navigate(['/'])
-      },
-      error: (err) => console.log(err)
-     }
-    )    
-    
-  } 
+ register(request: Register$Params): Observable<AuthUserResponse> {
+  return this.auth.register(request).pipe(
+    tap(value => {
+      localStorage.setItem(this.TOKEN_KEY, value.accessToken as string);
+      localStorage.setItem(this.USER_KEY, JSON.stringify(value.user));
+    })
+  );
+}
 
-  login(request: Login$Params){
-    return this.auth.login(request).subscribe(
-      
-     {
-      next:  (value)  =>{
-         localStorage.setItem(this.TOKEN_KEY,value.accessToken as string);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(value.user));
-        this.router.navigate(['/'])
-      },
-      error: (err) => console.log(err)
-     }
-    )    
-  }
+ login(request: Login$Params): Observable<AuthUserResponse> {
+  return this.auth.login(request).pipe(
+    tap(value => {
+      localStorage.setItem(this.TOKEN_KEY, value.accessToken as string);
+      localStorage.setItem(this.USER_KEY, JSON.stringify(value.user));
+    })
+  );
+}
 
 
   saveToken(token: string) {

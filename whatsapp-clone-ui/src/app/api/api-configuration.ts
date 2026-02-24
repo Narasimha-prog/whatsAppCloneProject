@@ -11,7 +11,7 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class ApiConfiguration {
-  rootUrl: string = 'http://localhost:7878';
+  rootUrl: string = 'https://whatsappcloneproject.onrender.com';
 }
 
 /**

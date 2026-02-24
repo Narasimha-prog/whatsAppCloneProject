@@ -55,6 +55,15 @@ export class Register {
 
     this.authService.register({
       body:request
+    }).subscribe({
+      next: (value) =>{
+            this.loading = false;
+             this.router.navigate(['/']);
+      },
+      error: (err ) =>{
+        this.loading=false;
+        this.errorMessage=err.error?.message;
+      }
     })
   }
 
