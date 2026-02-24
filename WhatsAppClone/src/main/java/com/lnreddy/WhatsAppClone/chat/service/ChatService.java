@@ -19,7 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,13 +35,15 @@ public class ChatService {
 
 
     @Transactional(readOnly = true)
-    public List<ChatResponse> getChatByReceiverId(Authentication currentuser){
+    public List<ChatResponse> getChatByCurrentId(Authentication currentUser){
 
-        CustomeUserDetails userDetails =
-                (CustomeUserDetails) currentuser.getPrincipal();
 
-        final UUID userId= userDetails.getId();
-        log.info("Current users who log in {}",currentuser.getName());
+       //get current user Id
+        final UUID userId= AuthenticationHelper.toGetUserId(currentUser);
+
+        log.info("Current users who log in {}",currentUser.getName());
+
+        //gets chats based on current user
         return chatRepository.findChatsBySenderId(userId)
                 .stream()
                 .map(chat->this.toChatResponse(chat,userId))
@@ -51,12 +55,25 @@ public class ChatService {
     public UUID createChat(Authentication authentication, List<UUID> participantIds, String groupName) {
 
 
-       //to get user Id
+       //to get user id
         UUID creatorId = AuthenticationHelper.toGetUserId(authentication);
 
-        // Fetch all users including creator
-        List<User> users = userRepository.findAllById(participantIds);
+        //to add current user he is creating chat
+        List<UUID> allParticipants = new ArrayList<>(participantIds);
+        if (!allParticipants.contains(creatorId)) {
+            allParticipants.add(creatorId);
+        }
 
+        // Fetch all users including creator
+        List<User> users = userRepository.findAllById(allParticipants);
+
+        if(users.size()==2){
+            Optional<Chat> existing =
+                    chatRepository.findPrivateChatBetween(users.get(0).getId(),users.get(1).getId());
+            if (existing.isPresent()) {
+                return existing.get().getId();
+            }
+        }
 
         // Create new Chat entity
         Chat chat = new Chat();
@@ -90,8 +107,7 @@ public class ChatService {
                 .id(chat.getId())
                 .name(chat.getChatName(currentUserId))
                 .chatType(chat.getChatType())
-                .unreadCount(messageStatusRepository.countUnreadMessages(currentUserId, chat.getId(),
-                                                                         MessageState.SENT))
+                .unreadCount(messageStatusRepository.countUnreadMessages(currentUserId, chat.getId(), MessageState.SENT))
                 .lastMessage(chat.getLastMessage())
                 .lastMessageTime(chat.getLastMessageTime())
                 .participantIds(chat.getParticipantsExcludeCurrentUser(currentUserId))

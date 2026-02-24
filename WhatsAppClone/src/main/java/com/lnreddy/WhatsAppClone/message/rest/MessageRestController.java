@@ -28,8 +28,8 @@ public class MessageRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(security =@SecurityRequirement(name = "jwt") )
-    public void saveMessage(@RequestBody MessageRequest messageRequest){
-        messageService.saveMessage(messageRequest);
+    public void saveMessage(@RequestBody MessageRequest messageRequest,Authentication authentication){
+        messageService.saveMessage(messageRequest,authentication);
     }
 
     @PostMapping(value = "/upload-media",consumes = "multipart/form-data")

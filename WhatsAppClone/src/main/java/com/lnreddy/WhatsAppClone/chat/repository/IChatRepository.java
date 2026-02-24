@@ -20,4 +20,13 @@ public interface IChatRepository extends JpaRepository<Chat, UUID> {
 """)
     List<Chat> findChatsBySenderId(@Param("userId") UUID userId);
 
+    @Query("""
+    SELECT c FROM Chat c
+    JOIN c.participants p1
+    JOIN c.participants p2
+    WHERE c.chatType = ChatType.PRIVATE
+      AND p1.user.id = :user1
+      AND p2.user.id = :user2
+""")
+    Optional<Chat> findPrivateChatBetween(UUID user1, UUID user2);
 }

@@ -39,7 +39,7 @@ public class ChatRestController {
 @Operation(security =@SecurityRequirement(name = "jwt") )
     public ResponseEntity<List<ChatResponse>> getChatsByReceiver(Authentication authentication){
 
-    return ResponseEntity.ok(chatService.getChatByReceiverId(authentication));
+    return ResponseEntity.ok(chatService.getChatByCurrentId(authentication));
 }
 
 }

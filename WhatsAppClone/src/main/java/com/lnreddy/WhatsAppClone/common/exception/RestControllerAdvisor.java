@@ -1,5 +1,6 @@
 package com.lnreddy.WhatsAppClone.common.exception;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,7 +23,7 @@ public class RestControllerAdvisor {
                 "Entity not found",
                 ex.getMessage()
         );
-        log.error("Error From EntityNotFoundException",ex);
+        log.warn("Error From EntityNotFoundException",ex);
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -51,7 +52,13 @@ public class RestControllerAdvisor {
                 "Validation failed",
                 errors.toString()
         );
-        log.error("Error From MethodArgumentNotValidException",ex);
+        log.warn("Error From MethodArgumentNotValidException",ex);
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ExceptionResponse> toHandleExpiredJwtException(ExpiredJwtException ex){
+        log.warn("Error From ExpiredJwtException",ex);
+     return new ResponseEntity<>(ExceptionResponse.builder().error(ex.getMessage()).message("Jwt token is expired place login again").status(400).build(),HttpStatus.BAD_REQUEST);
     }
 }

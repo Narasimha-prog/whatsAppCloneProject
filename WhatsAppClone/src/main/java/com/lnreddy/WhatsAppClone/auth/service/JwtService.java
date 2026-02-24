@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Component
@@ -32,7 +33,7 @@ public class JwtService {
     public String generateToken(String uuid, Set<String> roles) {
         return Jwts.builder()
                 .setSubject(uuid)
-                .claim("roles", String.join(",", roles))
+                .claim("roles", roles)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key)
@@ -47,11 +48,10 @@ public class JwtService {
     }
 
     public Set<String> getRoles(String token) {
-        Set roles = Set.copyOf(parseClaims(token).get(
+        return Set.copyOf(parseClaims(token).get(
                 "roles",
-                Set.class
+                List.class
         ));
-        return roles;
     }
     // Validate token
     public boolean validateToken(String token) {
@@ -63,9 +63,11 @@ public class JwtService {
         }
             catch(ExpiredJwtException e){
                 log.warn("Token expired",e);
+                throw e;
             }
             catch(JwtException e){
                 log.warn("Invalid token",e);
+
             }
             catch (IllegalArgumentException e){
                log.warn("Invalid arguments: ",e);

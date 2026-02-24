@@ -6,6 +6,7 @@ import com.lnreddy.WhatsAppClone.chat.repository.IChatRepository;
 import com.lnreddy.WhatsAppClone.common.file.FileService;
 import com.lnreddy.WhatsAppClone.common.file.FileUtils;
 import com.lnreddy.WhatsAppClone.common.secuity.CustomeUserDetails;
+import com.lnreddy.WhatsAppClone.common.util.AuthenticationHelper;
 import com.lnreddy.WhatsAppClone.message.constants.MessageState;
 import com.lnreddy.WhatsAppClone.message.constants.MessageType;
 import com.lnreddy.WhatsAppClone.message.dto.MessageRequest;
@@ -44,12 +45,12 @@ public class MessageService {
        SAVE TEXT MESSAGE
        ========================== */
     @Transactional
-    public void saveMessage(MessageRequest messageRequest) {
+    public void saveMessage(MessageRequest messageRequest,Authentication authentication)  {
 
         Chat chat = chatRepository.findById(messageRequest.getChatId())
                 .orElseThrow(() -> new EntityNotFoundException("Chat not found"));
 
-        User sender = userRepository.findById(messageRequest.getSenderId())
+        User sender = userRepository.findById(AuthenticationHelper.toGetUserId(authentication))
                 .orElseThrow(() -> new EntityNotFoundException("Sender not found"));
 
         Message message = new Message();
@@ -76,11 +77,10 @@ public class MessageService {
             // Send notification
             Notification notification = Notification.builder()
                     .chatId(chat.getId())
-                    .content(messageRequest.getContent())
-                    .messageType(messageRequest.getType())
+                    .content(messageRequest.getContent()) //message hi...
+                    .messageType(messageRequest.getType())  //TXT
                     .senderId(sender.getId())
                     .notificationType(NotificationType.MESSAGE)
-                    .chatId(sender.getId())
                     .build();
 
             notificationService.sendNotification(user.getId(), notification);
