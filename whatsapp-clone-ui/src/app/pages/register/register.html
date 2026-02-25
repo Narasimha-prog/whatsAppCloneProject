@@ -5,29 +5,72 @@
         <h2 class="text-center mb-4">Create Account</h2>
         <form (ngSubmit)="register()">
           <div class="mb-3">
-            <input type="text" placeholder="First Name" [(ngModel)]="firstName" name="firstName" class="form-control" required>
+            <input
+              type="text"
+              placeholder="First Name"
+              [(ngModel)]="firstName"
+              name="firstName"
+              class="form-control"
+              required
+            />
           </div>
           <div class="mb-3">
-            <input type="text" placeholder="Last Name" [(ngModel)]="lastName" name="lastName" class="form-control" required>
+            <input
+              type="text"
+              placeholder="Last Name"
+              [(ngModel)]="lastName"
+              name="lastName"
+              class="form-control"
+              required
+            />
           </div>
           <div class="mb-3">
-            <input type="email" placeholder="Email" [(ngModel)]="email" name="email" class="form-control" required>
+            <input
+              type="email"
+              placeholder="Email"
+              [(ngModel)]="email"
+              name="email"
+              class="form-control"
+              required
+            />
           </div>
           <div class="mb-3">
-            <input type="text" placeholder="Phone Number" [(ngModel)]="phoneNumber" name="phoneNumber" class="form-control" required>
+            <input
+              type="text"
+              placeholder="+919999988888 like this"
+              [(ngModel)]="phoneNumber"
+              name="phoneNumber"
+              class="form-control"
+              required
+            />
           </div>
-          <div class="mb-3">
-            <input type="password" placeholder="Password" [(ngModel)]="password" name="password" class="form-control" required>
+          <div class="mb-3 position-relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Password"
+              [(ngModel)]="password"
+              name="password"
+              class="form-control pe-5"
+              required
+            />
+
+            <!-- Toggle Button -->
+            <button
+              type="button"
+              class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2"
+              (click)="togglePassword()"
+            >
+              {{ showPassword ? "Hide" : "Show" }}
+            </button>
           </div>
-          <button type="submit" 
-          class="btn btn-primary w-100">
-          
+          <button type="submit" class="btn btn-primary w-100">
             <!-- Spinner -->
-            <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
-          
-          {{ loading ? 'Creating...' : 'Register' }}
+            <span
+              *ngIf="loading"
+              class="spinner-border spinner-border-sm"
+            ></span>
 
-
+            {{ loading ? "Creating..." : "Register" }}
           </button>
           <!-- Error Message -->
           <div *ngIf="errorMessage" class="alert alert-danger mt-3 text-center">
@@ -37,7 +80,6 @@
         <p class="text-center mt-3">
           Already have an account? <a routerLink="/login">Login</a>
         </p>
-        
       </div>
     </div>
   </div>

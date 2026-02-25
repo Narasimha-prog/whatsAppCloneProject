@@ -18,6 +18,8 @@ export class Login {
   errorMessage = '';
   loading=false;
 
+  showPassword:boolean=false;
+
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -37,5 +39,10 @@ export class Login {
     }
   });
 
+}
+
+
+togglePassword(){
+  this.showPassword=!this.showPassword;
 }
 }

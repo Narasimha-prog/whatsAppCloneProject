@@ -25,9 +25,11 @@ export class Register {
 
   phoneNumber="";
 
-  loading=false;
+  loading:boolean=false;
 
   errorMessage="";
+
+  showPassword: boolean = false;
 
   constructor(
     private authService:AuthService,
@@ -66,6 +68,8 @@ export class Register {
       }
     })
   }
-
+togglePassword() {
+  this.showPassword = !this.showPassword;
+}
 
 }

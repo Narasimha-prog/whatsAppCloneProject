@@ -16,5 +16,9 @@ export const routes: Routes = [
     {
         path: 'register',
         component: Register
-    }
+    },
+    // {
+    //     // path:'profile',
+    //     // component:
+    // }
 ];

@@ -14,23 +14,35 @@
             placeholder="Email">
         </div>
 
-        <div class="mb-3">
-          <input 
-            type="password" 
-            class="form-control" 
-            [(ngModel)]="password" 
-            name="password" 
-            placeholder="Password">
-        </div>
+       <div class="mb-3 position-relative">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              placeholder="Password"
+              [(ngModel)]="password"
+              name="password"
+              class="form-control pe-5"
+              required
+            />
+
+            <!-- Toggle Button -->
+            <button
+              type="button"
+              class="btn btn-sm position-absolute top-50 end-0 translate-middle-y me-2"
+              (click)="togglePassword()"
+            >
+              {{ showPassword ? "Hide" : "Show" }}
+            </button>
+          </div>
 
         <button 
           type="button" 
           class="btn btn-primary w-100" 
           *ngIf="!loading"
           (click)="login()">
+           <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
           Login
         </button>
-         <span *ngIf="loading" class="spinner-border spinner-border-sm"></span>
+        
         <p class="text-danger mt-2" *ngIf="errorMessage">{{errorMessage}}</p>
 
         <p class="mt-3 text-center">
